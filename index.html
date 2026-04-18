@@ -9,943 +9,444 @@
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #FBF7F2;
-      --bg-warm: #F5EDE4;
-      --fg: #3D2E24;
-      --muted: #8C7A6B;
-      --muted-light: #B5A99A;
-      --border: #E8DFD5;
-      --card: #FFFAF6;
-      --accent-sunset: #D4875E;
-      --accent-peach: #E8A88A;
-      --accent-coral: #C9706B;
-      --accent-blush: #E8C4B8;
-      --accent-amber: #C4956A;
-      --header-h: 60px;
-      --content-max: 640px;
-      --serif: 'Fraunces', Georgia, serif;
-      --sans: 'Outfit', system-ui, sans-serif;
-      --hand: 'Caveat', cursive;
+      --bg:#FBF7F2;--bg-warm:#F5EDE4;--fg:#3D2E24;--muted:#8C7A6B;
+      --muted-light:#B5A99A;--border:#E8DFD5;--card:#FFFAF6;
+      --sunset:#D4875E;--peach:#E8A88A;--coral:#C9706B;
+      --blush:#E8C4B8;--amber:#C4956A;
+      --serif:'Fraunces',Georgia,serif;--sans:'Outfit',system-ui,sans-serif;
+      --hand:'Caveat',cursive;--max:640px;--hdr:60px;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:var(--sans);font-weight:400;font-size:16px;
+      line-height:1.8;color:var(--fg);
+      background:linear-gradient(180deg,#F3EBE0 0%,var(--bg) 18%,var(--bg) 75%,#F5EDE4 100%);
+      min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;
     }
 
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    /* ── grain ── */
+    .grain{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:10000;opacity:0.032}
 
-    body {
-      font-family: var(--sans);
-      font-weight: 400;
-      font-size: 16px;
-      line-height: 1.8;
-      color: var(--fg);
-      background: var(--bg);
-      min-height: 100vh;
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-    }
+    /* ── vignette ── */
+    .vignette{position:fixed;inset:0;pointer-events:none;z-index:9999;
+      background:radial-gradient(ellipse at 50% 40%,transparent 45%,rgba(61,46,36,0.07) 100%)}
 
-    /* ── Grain overlay ── */
-    .grain {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 10000;
-      opacity: 0.035;
-    }
+    /* ── particles canvas ── */
+    #particles{position:fixed;inset:0;pointer-events:none;z-index:2}
 
-    /* ── Scroll progress ── */
-    .scroll-progress {
-      position: fixed;
-      top: 0; left: 0;
-      height: 2px;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent-peach), var(--accent-coral), var(--accent-sunset));
-      z-index: 10001;
-      pointer-events: none;
-    }
+    /* ── scroll progress ── */
+    .scroll-bar{position:fixed;top:0;left:0;height:2px;width:0%;z-index:10001;pointer-events:none;
+      background:linear-gradient(90deg,var(--peach),var(--coral),var(--sunset),var(--amber))}
 
-    /* ── Warm floating shapes ── */
-    .warm-shapes {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
-    .warm-shape {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(90px);
-      will-change: transform;
-    }
-    .ws-1 {
-      width: 480px; height: 480px;
-      background: radial-gradient(circle, var(--accent-peach) 0%, transparent 70%);
-      top: -8%; right: -6%;
-      opacity: 0.14;
-      animation: warmFloat1 26s ease-in-out infinite;
-    }
-    .ws-2 {
-      width: 400px; height: 400px;
-      background: radial-gradient(circle, var(--accent-coral) 0%, transparent 70%);
-      bottom: 5%; left: -8%;
-      opacity: 0.1;
-      animation: warmFloat2 30s ease-in-out infinite;
-    }
-    .ws-3 {
-      width: 350px; height: 350px;
-      background: radial-gradient(circle, var(--accent-sunset) 0%, transparent 70%);
-      top: 35%; left: 50%;
-      opacity: 0.07;
-      animation: warmFloat3 22s ease-in-out infinite;
-    }
-    .ws-4 {
-      width: 300px; height: 300px;
-      background: radial-gradient(circle, var(--accent-blush) 0%, transparent 70%);
-      top: 65%; right: 15%;
-      opacity: 0.09;
-      animation: warmFloat4 28s ease-in-out infinite;
-    }
+    /* ── warm blobs ── */
+    .blobs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+    .blob{position:absolute;border-radius:50%;filter:blur(100px);will-change:transform}
+    .b1{width:520px;height:520px;background:radial-gradient(circle,var(--peach),transparent 70%);
+      top:-10%;right:-8%;opacity:.13;animation:bf1 28s ease-in-out infinite}
+    .b2{width:440px;height:440px;background:radial-gradient(circle,var(--coral),transparent 70%);
+      bottom:0;left:-10%;opacity:.09;animation:bf2 32s ease-in-out infinite}
+    .b3{width:380px;height:380px;background:radial-gradient(circle,var(--sunset),transparent 70%);
+      top:38%;left:45%;opacity:.06;animation:bf3 24s ease-in-out infinite}
+    .b4{width:300px;height:300px;background:radial-gradient(circle,var(--blush),transparent 70%);
+      top:70%;right:10%;opacity:.08;animation:bf4 26s ease-in-out infinite}
+    @keyframes bf1{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(-50px,60px) scale(1.06)}75%{transform:translate(30px,-40px) scale(.95)}}
+    @keyframes bf2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(70px,-50px) scale(1.08)}}
+    @keyframes bf3{0%,100%{transform:translate(0,0)}35%{transform:translate(-60px,35px)}70%{transform:translate(45px,-55px)}}
+    @keyframes bf4{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-40px,-30px) scale(1.05)}}
 
-    @keyframes warmFloat1 {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      33% { transform: translate(-40px, 50px) scale(1.06); }
-      66% { transform: translate(30px, -30px) scale(0.95); }
-    }
-    @keyframes warmFloat2 {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(60px, -40px) scale(1.08); }
-    }
-    @keyframes warmFloat3 {
-      0%, 100% { transform: translate(0, 0); }
-      33% { transform: translate(-50px, 30px); }
-      66% { transform: translate(40px, -50px); }
-    }
-    @keyframes warmFloat4 {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(-35px, -25px) scale(1.05); }
-    }
+    /* ── blurred botanicals ── */
+    .bot{position:fixed;border-radius:50%;object-fit:cover;pointer-events:none;z-index:0;
+      filter:blur(75px) saturate(1.35) brightness(1.08);mix-blend-mode:multiply}
+    .bot1{width:400px;height:400px;top:5%;left:-6%;opacity:.11}
+    .bot2{width:340px;height:340px;bottom:10%;right:-4%;opacity:.09}
+    .bot3{width:280px;height:280px;top:50%;left:55%;opacity:.07}
 
-    /* ── Blurred photo decorations ── */
-    .blur-photo {
-      position: fixed;
-      border-radius: 50%;
-      object-fit: cover;
-      pointer-events: none;
-      z-index: 0;
-      filter: blur(70px) saturate(1.3) brightness(1.05);
-      mix-blend-mode: multiply;
-    }
-    .bp-1 {
-      width: 380px; height: 380px;
-      top: 10%; left: -5%;
-      opacity: 0.12;
-    }
-    .bp-2 {
-      width: 320px; height: 320px;
-      bottom: 15%; right: -3%;
-      opacity: 0.1;
-    }
+    /* ── header ── */
+    header{position:sticky;top:0;z-index:1000;
+      background:rgba(251,247,242,.78);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+      border-bottom:1px solid transparent;transition:border-color .3s,background .3s}
+    header.scrolled{border-bottom-color:var(--border);background:rgba(251,247,242,.92)}
+    .hdr-in{max-width:var(--max);margin:0 auto;padding:0 24px;height:var(--hdr);
+      display:flex;align-items:center;justify-content:space-between}
+    .logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .logo{font-family:var(--serif);font-size:1.25rem;font-weight:400;color:var(--fg);
+      letter-spacing:.01em;text-transform:lowercase;transition:opacity .2s}
+    .logo-wrap:hover .logo{opacity:.65}
+    .live-dots{display:flex;gap:3px;align-items:center}
+    .ld{width:4px;height:4px;border-radius:50%;background:var(--peach);
+      animation:ldP 2.4s ease-in-out infinite}
+    .ld:nth-child(2){animation-delay:.35s}.ld:nth-child(3){animation-delay:.7s}
+    @keyframes ldP{0%,100%{opacity:.15;transform:scale(.7)}50%{opacity:.6;transform:scale(1.3)}}
+    .write-btn{font-family:var(--sans);font-size:.78rem;font-weight:400;letter-spacing:.05em;
+      text-transform:lowercase;color:var(--muted);background:none;border:1px solid var(--border);
+      padding:7px 18px;border-radius:100px;cursor:pointer;transition:all .25s}
+    .write-btn:hover{color:var(--fg);border-color:var(--muted-light)}
+    .write-btn:focus-visible{outline:2px solid var(--sunset);outline-offset:2px}
 
-    /* ── Header ── */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      background: rgba(251, 247, 242, 0.8);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border-bottom: 1px solid transparent;
-      transition: border-color 0.3s, background 0.3s;
-    }
-    header.scrolled {
-      border-bottom-color: var(--border);
-      background: rgba(251, 247, 242, 0.92);
-    }
-    .header-inner {
-      max-width: var(--content-max);
-      margin: 0 auto;
-      padding: 0 24px;
-      height: var(--header-h);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .logo {
-      font-family: var(--serif);
-      font-size: 1.25rem;
-      font-weight: 400;
-      color: var(--fg);
-      text-decoration: none;
-      letter-spacing: 0.01em;
-      text-transform: lowercase;
-      transition: opacity 0.2s;
-    }
-    .logo:hover { opacity: 0.65; }
-    .write-btn {
-      font-family: var(--sans);
-      font-size: 0.78rem;
-      font-weight: 400;
-      letter-spacing: 0.05em;
-      text-transform: lowercase;
-      color: var(--muted);
-      background: none;
-      border: 1px solid var(--border);
-      padding: 7px 18px;
-      border-radius: 100px;
-      cursor: pointer;
-      transition: all 0.25s;
-    }
-    .write-btn:hover { color: var(--fg); border-color: var(--muted-light); }
-    .write-btn:focus-visible { outline: 2px solid var(--accent-sunset); outline-offset: 2px; }
+    /* ── reminder strip ── */
+    .reminder{text-align:center;padding:13px 24px;font-family:var(--hand);font-size:1.05rem;
+      color:var(--sunset);position:relative;z-index:1;transition:opacity .6s;
+      background:linear-gradient(90deg,transparent,rgba(232,168,138,.1) 25%,rgba(232,168,138,.1) 75%,transparent)}
 
-    /* ── Reminder strip ── */
-    .reminder-strip {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      padding: 14px 24px;
-      font-family: var(--hand);
-      font-size: 1.05rem;
-      color: var(--accent-sunset);
-      background: linear-gradient(90deg, transparent, rgba(232,168,138,0.12) 30%, rgba(232,168,138,0.12) 70%, transparent);
-      transition: opacity 0.6s;
-    }
+    /* ── main ── */
+    main{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:0 24px}
 
-    /* ── Main ── */
-    main {
-      position: relative;
-      z-index: 1;
-      max-width: var(--content-max);
-      margin: 0 auto;
-      padding: 0 24px;
-    }
+    /* ── hero ── */
+    .hero{text-align:center;padding:60px 0 44px;opacity:0;transform:translateY(14px);animation:fu .9s ease forwards .15s}
+    .hero-title{font-family:var(--serif);font-size:clamp(2.6rem,7vw,3.8rem);font-weight:300;
+      text-transform:lowercase;letter-spacing:.04em;color:var(--fg);line-height:1.15;
+      animation:breathe 7s ease-in-out infinite}
+    .hero-sub{font-family:var(--sans);font-weight:300;font-size:.92rem;color:var(--muted);
+      line-height:1.7;max-width:360px;margin:14px auto 0}
+    @keyframes breathe{0%,100%{opacity:1}50%{opacity:.8}}
+    @keyframes fu{to{opacity:1;transform:translateY(0)}}
 
-    /* ── Hero ── */
-    .hero {
-      text-align: center;
-      padding: 64px 0 48px;
-      opacity: 0;
-      transform: translateY(16px);
-      animation: fadeUp 0.9s ease forwards 0.15s;
-    }
-    .hero-title {
-      font-family: var(--serif);
-      font-size: clamp(2.6rem, 7vw, 3.8rem);
-      font-weight: 300;
-      text-transform: lowercase;
-      letter-spacing: 0.03em;
-      color: var(--fg);
-      line-height: 1.15;
-      margin-bottom: 16px;
-      animation: breathe 7s ease-in-out infinite;
-    }
-    .hero-sub {
-      font-family: var(--sans);
-      font-weight: 300;
-      font-size: 0.95rem;
-      color: var(--muted);
-      line-height: 1.7;
-      max-width: 380px;
-      margin: 0 auto;
-    }
+    /* ── fragments (visual pauses) ── */
+    .frag{position:relative;text-align:center;padding:52px 32px;margin:0 -24px;
+      border-radius:28px;overflow:hidden;opacity:0;transform:translateY(20px);
+      transition:opacity .7s ease,transform .7s ease}
+    .frag.vis{opacity:1;transform:translateY(0)}
+    .fg1{background:linear-gradient(135deg,#F2D9C4 0%,#FBF7F2 50%,#F5EDE4 100%)}
+    .fg2{background:linear-gradient(135deg,#E8C4B8 0%,#F5EDE4 50%,#FBF7F2 100%)}
+    .fg3{background:linear-gradient(180deg,#FBF7F2 0%,#F2D9C4 60%,#E8C4B8 100%)}
+    .fg4{background:linear-gradient(135deg,#F5EDE4 0%,#E8C4B8 40%,#F2D9C4 100%)}
+    /* decorative SVG shapes */
+    .frag-deco{position:absolute;pointer-events:none;opacity:.12}
+    .fd1{width:60px;height:60px;border-radius:50%;background:var(--sunset);top:16px;right:24px;filter:blur(20px)}
+    .fd2{width:40px;height:40px;border-radius:50%;background:var(--coral);bottom:18px;left:28px;filter:blur(16px)}
+    .fd3{width:50px;height:50px;border-radius:50%;background:var(--peach);top:20px;left:20px;filter:blur(22px)}
+    .fd4{width:35px;height:35px;border-radius:50%;background:var(--amber);bottom:14px;right:20px;filter:blur(18px)}
+    .frag-text{font-family:var(--serif);font-size:clamp(1.1rem,2.5vw,1.35rem);font-weight:300;
+      font-style:italic;color:var(--muted);line-height:1.65;max-width:420px;margin:0 auto;
+      letter-spacing:.01em;position:relative;z-index:1}
+    .frag-line{width:28px;height:1px;background:var(--peach);opacity:.35;margin:0 auto;position:relative;z-index:1}
 
-    @keyframes breathe {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.82; }
-    }
-    @keyframes fadeUp {
-      to { opacity: 1; transform: translateY(0); }
-    }
+    /* ── post cards ── */
+    .pcard{background:linear-gradient(170deg,var(--card) 0%,#FFF8F2 100%);border-radius:18px;
+      padding:40px 36px 32px;margin:32px 0;border:1px solid var(--border);position:relative;
+      opacity:0;transform:translateY(24px);transition:transform .3s,box-shadow .3s,opacity .7s}
+    .pcard.vis{opacity:1;transform:translateY(0)}
+    .pcard:hover{transform:translateY(-2px);box-shadow:0 12px 44px rgba(61,46,36,.06)}
+    .pcard::before{content:'';position:absolute;left:0;top:28px;bottom:28px;width:3px;
+      border-radius:0 3px 3px 0}
+    .pcard.t-sunset::before{background:linear-gradient(180deg,var(--sunset),var(--peach))}
+    .pcard.t-coral::before{background:linear-gradient(180deg,var(--coral),var(--blush))}
+    .pcard.t-amber::before{background:linear-gradient(180deg,var(--amber),#D4B896)}
+    .pcard.new-glow{animation:ng 3s ease forwards}
+    @keyframes ng{0%{box-shadow:0 0 0 0 rgba(212,135,94,.2)}25%{box-shadow:0 0 0 12px rgba(212,135,94,.05)}100%{box-shadow:none}}
 
-    /* ── Fragment sections (visual pauses) ── */
-    .fragment {
-      text-align: center;
-      padding: 56px 32px;
-      margin: 0 -24px;
-      border-radius: 0;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-    .fragment.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .fragment.grad-1 { background: linear-gradient(135deg, #F2D9C4 0%, #FBF7F2 45%, #F5EDE4 100%); }
-    .fragment.grad-2 { background: linear-gradient(135deg, #E8C4B8 0%, #F5EDE4 45%, #FBF7F2 100%); }
-    .fragment.grad-3 { background: linear-gradient(180deg, #FBF7F2 0%, #F2D9C4 50%, #E8C4B8 100%); }
-    .fragment.grad-4 { background: linear-gradient(135deg, #F5EDE4 0%, #E8C4B8 40%, #F2D9C4 100%); }
-    .fragment-text {
-      font-family: var(--serif);
-      font-size: clamp(1.15rem, 2.5vw, 1.4rem);
-      font-weight: 300;
-      font-style: italic;
-      color: var(--muted);
-      line-height: 1.6;
-      max-width: 440px;
-      margin: 0 auto;
-      letter-spacing: 0.01em;
-    }
-    .fragment-deco {
-      width: 32px; height: 1px;
-      background: var(--accent-peach);
-      opacity: 0.4;
-      margin: 0 auto;
-    }
+    .pmeta{display:flex;align-items:center;gap:10px;margin-bottom:16px;
+      font-size:.73rem;color:var(--muted-light);letter-spacing:.03em}
+    .pmeta .dot{width:3px;height:3px;border-radius:50%;background:var(--muted-light);opacity:.5}
 
-    /* ── Post cards ── */
-    .post-card {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 40px 36px 36px;
-      margin: 36px 0;
-      border: 1px solid var(--border);
-      position: relative;
-      opacity: 0;
-      transform: translateY(24px);
-      transition: transform 0.3s, box-shadow 0.3s, opacity 0.7s;
-    }
-    .post-card.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .post-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(61, 46, 36, 0.06);
-    }
-    .post-card::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 24px; bottom: 24px;
-      width: 3px;
-      border-radius: 0 3px 3px 0;
-    }
-    .post-card.tone-sunset::before { background: linear-gradient(180deg, var(--accent-sunset), var(--accent-peach)); }
-    .post-card.tone-coral::before { background: linear-gradient(180deg, var(--accent-coral), var(--accent-blush)); }
-    .post-card.tone-amber::before { background: linear-gradient(180deg, var(--accent-amber), #D4B896); }
+    .ptitle{font-family:var(--serif);font-size:clamp(1.45rem,3.5vw,1.85rem);font-weight:400;
+      text-transform:lowercase;letter-spacing:.02em;color:var(--fg);line-height:1.3;margin-bottom:22px}
 
-    .post-card.new-glow {
-      animation: warmGlow 3s ease forwards;
-    }
-    @keyframes warmGlow {
-      0% { box-shadow: 0 0 0 0 rgba(212, 135, 94, 0.2); }
-      25% { box-shadow: 0 0 0 10px rgba(212, 135, 94, 0.06); }
-      100% { box-shadow: 0 0 0 0 rgba(212, 135, 94, 0); }
-    }
+    .pbody p{margin-bottom:1.35em;color:var(--muted);font-weight:300}
+    .pbody p:last-child{margin-bottom:0}
 
-    .post-meta {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 18px;
-      font-size: 0.75rem;
-      color: var(--muted-light);
-      letter-spacing: 0.03em;
-    }
-    .post-meta .dot {
-      width: 3px; height: 3px;
-      border-radius: 50%;
-      background: var(--muted-light);
-      opacity: 0.6;
-    }
+    /* ── inner notes ── */
+    .inner-note{display:block;font-family:var(--hand);font-size:1.08rem;font-weight:400;
+      color:var(--coral);margin-top:10px;padding-left:18px;border-left:2px solid var(--blush);
+      line-height:1.6;opacity:.88}
 
-    .post-title {
-      font-family: var(--serif);
-      font-size: clamp(1.5rem, 3.5vw, 1.9rem);
-      font-weight: 400;
-      text-transform: lowercase;
-      letter-spacing: 0.02em;
-      color: var(--fg);
-      line-height: 1.3;
-      margin-bottom: 22px;
-    }
+    .pdiv{width:32px;height:1px;background:var(--border);margin:24px 0}
 
-    .post-body p {
-      margin-bottom: 1.35em;
-      color: var(--muted);
-      font-weight: 300;
-    }
-    .post-body p:last-child { margin-bottom: 0; }
+    /* ── reflection prompt ── */
+    .pprompt{background:linear-gradient(135deg,rgba(242,217,196,.45),rgba(245,237,228,.55));
+      border-radius:10px;padding:16px 20px;font-family:var(--hand);font-size:.98rem;
+      color:var(--muted);line-height:1.6;position:relative;margin-bottom:6px}
+    .pprompt::before{content:'';position:absolute;left:0;top:12px;bottom:12px;width:3px;
+      border-radius:2px;background:var(--sunset);opacity:.3}
 
-    /* ── Inner notes (handwritten inner dialogue) ── */
-    .inner-note {
-      display: block;
-      font-family: var(--hand);
-      font-size: 1.1rem;
-      font-weight: 400;
-      color: var(--accent-coral);
-      margin-top: 10px;
-      padding-left: 18px;
-      border-left: 2px solid var(--accent-blush);
-      line-height: 1.6;
-      opacity: 0.9;
-    }
+    /* ── sign-off ── */
+    .psignoff{font-family:var(--hand);font-size:.93rem;color:var(--muted-light);text-align:right;
+      margin:8px 0 4px;opacity:.65}
 
-    .post-divider {
-      width: 36px; height: 1px;
-      background: var(--border);
-      margin: 26px 0;
-    }
+    /* ── latest whisper preview on card ── */
+    .latest-whisper{font-family:var(--hand);font-size:.88rem;color:var(--muted-light);
+      line-height:1.55;padding:8px 0 0;margin-bottom:4px;border-top:1px solid var(--border);
+      opacity:.8;overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;
+      max-width:90%}
+    .latest-whisper strong{color:var(--muted);font-weight:500}
 
-    /* ── Reflection prompt ── */
-    .post-prompt {
-      background: linear-gradient(135deg, rgba(242,217,196,0.5), rgba(245,237,228,0.6));
-      border-radius: 10px;
-      padding: 18px 22px;
-      font-family: var(--hand);
-      font-size: 1rem;
-      color: var(--muted);
-      line-height: 1.65;
-      position: relative;
-      margin-bottom: 20px;
-    }
-    .post-prompt::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 14px; bottom: 14px;
-      width: 3px;
-      border-radius: 2px;
-      background: var(--accent-sunset);
-      opacity: 0.35;
-    }
+    /* ── comment toggle ── */
+    .ctoggle{font-family:var(--sans);font-size:.76rem;font-weight:400;color:var(--muted-light);
+      background:none;border:none;cursor:pointer;padding:4px 0;transition:color .2s;
+      display:inline-flex;align-items:center;gap:6px;letter-spacing:.02em}
+    .ctoggle:hover{color:var(--muted)}
+    .ctoggle:focus-visible{outline:2px solid var(--sunset);outline-offset:2px;border-radius:2px}
+    .ctoggle svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5}
+    .ctoggle .arr{transition:transform .3s;font-size:.6rem}
+    .ctoggle.open .arr{transform:rotate(180deg)}
 
-    /* ── Soft sign-off ── */
-    .post-signoff {
-      font-family: var(--hand);
-      font-size: 0.95rem;
-      color: var(--muted-light);
-      text-align: right;
-      margin-top: 6px;
-      margin-bottom: 18px;
-      opacity: 0.7;
-    }
+    /* ── comments section ── */
+    .csec{max-height:0;overflow:hidden;transition:max-height .5s ease,opacity .35s ease;opacity:0}
+    .csec.open{max-height:2000px;opacity:1}
+    .cinner{padding-top:16px}
+    .citem{padding:14px 0;border-bottom:1px solid var(--border)}
+    .citem:last-of-type{border-bottom:none}
+    .citem.highlight{animation:chigh 1.5s ease forwards}
+    @keyframes chigh{0%{background:rgba(232,168,138,.15)}100%{background:transparent}}
+    .chdr{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+    .cname{font-size:.78rem;font-weight:400;color:var(--fg)}
+    .cname.anon{font-family:var(--hand);font-size:.9rem;color:var(--muted-light)}
+    .cdate{font-size:.68rem;color:var(--muted-light)}
+    .ctxt{font-size:.88rem;line-height:1.7;color:var(--muted);font-weight:300}
 
-    /* ── Comment toggle ── */
-    .comment-toggle {
-      font-family: var(--sans);
-      font-size: 0.78rem;
-      font-weight: 400;
-      color: var(--muted-light);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px 0;
-      transition: color 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      letter-spacing: 0.02em;
-    }
-    .comment-toggle:hover { color: var(--muted); }
-    .comment-toggle:focus-visible { outline: 2px solid var(--accent-sunset); outline-offset: 2px; border-radius: 2px; }
-    .comment-toggle svg {
-      width: 13px; height: 13px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.5;
-    }
-    .comment-toggle .arrow {
-      transition: transform 0.3s;
-      font-size: 0.65rem;
-    }
-    .comment-toggle.open .arrow { transform: rotate(180deg); }
+    /* ── comment form ── */
+    .cform{display:flex;flex-direction:column;gap:10px;margin-top:14px;padding-top:14px;
+      border-top:1px solid var(--border)}
+    .cname-in{font-family:var(--sans);font-size:.8rem;color:var(--fg);background:var(--bg);
+      border:1px solid var(--border);border-radius:8px;padding:8px 14px;width:200px;
+      transition:border-color .2s;font-weight:300}
+    .cname-in::placeholder{color:var(--muted-light)}
+    .cname-in:focus{outline:none;border-color:var(--muted-light)}
+    .ctxt-in{font-family:var(--sans);font-size:.88rem;color:var(--fg);background:var(--bg);
+      border:1px solid var(--border);border-radius:10px;padding:12px 14px;min-height:76px;
+      resize:vertical;line-height:1.65;font-weight:300;transition:border-color .2s}
+    .ctxt-in::placeholder{color:var(--muted-light)}
+    .ctxt-in:focus{outline:none;border-color:var(--muted-light)}
+    .csubmit{align-self:flex-start;font-family:var(--sans);font-size:.76rem;font-weight:400;
+      letter-spacing:.03em;text-transform:lowercase;color:var(--card);background:var(--fg);
+      border:none;padding:8px 22px;border-radius:100px;cursor:pointer;
+      transition:opacity .2s,transform .15s}
+    .csubmit:hover{opacity:.82}.csubmit:active{transform:scale(.97)}
+    .csubmit:disabled{opacity:.3;cursor:not-allowed}
+    .csubmit:focus-visible{outline:2px solid var(--sunset);outline-offset:2px}
 
-    /* ── Comment section ── */
-    .comments-section {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.5s ease, opacity 0.35s ease;
-      opacity: 0;
-    }
-    .comments-section.open {
-      max-height: 2000px;
-      opacity: 1;
-    }
-    .comments-inner { padding-top: 18px; }
-    .comment-item {
-      padding: 14px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .comment-item:last-of-type { border-bottom: none; }
-    .comment-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 4px;
-    }
-    .comment-name {
-      font-size: 0.78rem;
-      font-weight: 400;
-      color: var(--fg);
-    }
-    .comment-name.anon {
-      font-family: var(--hand);
-      font-size: 0.9rem;
-      color: var(--muted-light);
-    }
-    .comment-date {
-      font-size: 0.7rem;
-      color: var(--muted-light);
-    }
-    .comment-text {
-      font-size: 0.88rem;
-      line-height: 1.7;
-      color: var(--muted);
-      font-weight: 300;
-    }
+    /* ── whispers section ── */
+    .whispers{padding:48px 0 12px;margin-top:20px}
+    .whispers-head{font-family:var(--hand);font-size:1.15rem;color:var(--sunset);
+      text-align:center;margin-bottom:28px;opacity:.7}
+    .witem{background:linear-gradient(170deg,var(--card),#FFF8F2);border:1px solid var(--border);
+      border-radius:14px;padding:20px 24px;margin-bottom:14px;position:relative;overflow:hidden}
+    .witem::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+      background:var(--peach);opacity:.3;border-radius:0 2px 2px 0}
+    .wmeta{font-size:.7rem;color:var(--muted-light);margin-bottom:6px;letter-spacing:.02em}
+    .wmeta .wfrom{font-family:var(--hand);font-size:.85rem;color:var(--muted)}
+    .wtext{font-family:var(--hand);font-size:.95rem;color:var(--muted);line-height:1.6;
+      font-weight:400}
+    .wcontext{font-size:.72rem;color:var(--muted-light);margin-top:6px;font-style:italic;opacity:.7}
 
-    /* ── Comment form ── */
-    .comment-form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-    }
-    .comment-name-input {
-      font-family: var(--sans);
-      font-size: 0.8rem;
-      color: var(--fg);
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 8px 14px;
-      width: 200px;
-      transition: border-color 0.2s;
-      font-weight: 300;
-    }
-    .comment-name-input::placeholder { color: var(--muted-light); }
-    .comment-name-input:focus { outline: none; border-color: var(--muted-light); }
-    .comment-textarea {
-      font-family: var(--sans);
-      font-size: 0.88rem;
-      color: var(--fg);
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 14px;
-      min-height: 80px;
-      resize: vertical;
-      line-height: 1.65;
-      font-weight: 300;
-      transition: border-color 0.2s;
-    }
-    .comment-textarea::placeholder { color: var(--muted-light); }
-    .comment-textarea:focus { outline: none; border-color: var(--muted-light); }
-    .comment-submit {
-      align-self: flex-start;
-      font-family: var(--sans);
-      font-size: 0.76rem;
-      font-weight: 400;
-      letter-spacing: 0.03em;
-      text-transform: lowercase;
-      color: var(--card);
-      background: var(--fg);
-      border: none;
-      padding: 8px 22px;
-      border-radius: 100px;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.15s;
-    }
-    .comment-submit:hover { opacity: 0.82; }
-    .comment-submit:active { transform: scale(0.97); }
-    .comment-submit:disabled { opacity: 0.3; cursor: not-allowed; }
-    .comment-submit:focus-visible { outline: 2px solid var(--accent-sunset); outline-offset: 2px; }
+    /* ── modal ── */
+    .moverlay{position:fixed;inset:0;z-index:5000;background:rgba(61,46,36,.22);
+      backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+      display:flex;align-items:center;justify-content:center;padding:24px;
+      opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+    .moverlay.open{opacity:1;visibility:visible}
+    .modal{background:var(--card);border:1px solid var(--border);border-radius:20px;
+      padding:40px 36px 32px;width:100%;max-width:540px;max-height:85vh;overflow-y:auto;
+      transform:translateY(14px) scale(.98);transition:transform .3s;position:relative}
+    .moverlay.open .modal{transform:translateY(0) scale(1)}
+    .mclose{position:absolute;top:14px;right:18px;font-size:1.3rem;color:var(--muted-light);
+      background:none;border:none;cursor:pointer;padding:4px;transition:color .2s;line-height:1}
+    .mclose:hover{color:var(--fg)}
+    .mclose:focus-visible{outline:2px solid var(--sunset);outline-offset:2px;border-radius:4px}
+    .mlabel{font-family:var(--hand);font-size:.92rem;color:var(--muted-light);margin-bottom:7px;display:block}
+    .mtitle{font-family:var(--serif);font-size:1.5rem;font-weight:400;text-transform:lowercase;
+      letter-spacing:.02em;color:var(--fg);background:none;border:none;
+      border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:20px;width:100%;line-height:1.3}
+    .mtitle::placeholder{color:var(--muted-light);text-transform:lowercase}
+    .mtitle:focus{outline:none;border-bottom-color:var(--muted-light)}
+    .mbody{font-family:var(--sans);font-size:.92rem;font-weight:300;color:var(--fg);
+      background:none;border:none;width:100%;min-height:200px;resize:vertical;line-height:1.85}
+    .mbody::placeholder{color:var(--muted-light)}
+    .mbody:focus{outline:none}
+    .mhint{font-family:var(--hand);font-size:.84rem;color:var(--muted-light);margin-top:7px;opacity:.65}
+    .mprompt{font-family:var(--hand);font-size:.95rem;color:var(--fg);
+      background:rgba(242,217,196,.25);border:none;border-radius:10px;
+      padding:14px 16px;margin-top:18px;width:100%;line-height:1.55}
+    .mprompt::placeholder{color:var(--muted-light)}
+    .mprompt:focus{outline:2px solid var(--border)}
+    .mopts{display:flex;align-items:center;justify-content:space-between;margin-top:26px;
+      padding-top:18px;border-top:1px solid var(--border)}
+    .tpicker{display:flex;gap:10px;align-items:center}
+    .tlbl{font-size:.72rem;color:var(--muted-light);text-transform:lowercase;letter-spacing:.03em;margin-right:2px}
+    .topt{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;
+      transition:border-color .2s,transform .2s}
+    .topt:hover{transform:scale(1.15)}.topt.active{border-color:var(--fg)}
+    .topt:focus-visible{outline:2px solid var(--sunset);outline-offset:2px}
+    .pub-btn{font-family:var(--sans);font-size:.8rem;font-weight:400;letter-spacing:.03em;
+      text-transform:lowercase;color:var(--card);background:var(--fg);border:none;
+      padding:10px 28px;border-radius:100px;cursor:pointer;transition:opacity .2s,transform .15s}
+    .pub-btn:hover{opacity:.82}.pub-btn:active{transform:scale(.97)}
+    .pub-btn:disabled{opacity:.3;cursor:not-allowed}
+    .pub-btn:focus-visible{outline:2px solid var(--sunset);outline-offset:2px}
 
-    /* ── Modal ── */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 5000;
-      background: rgba(61, 46, 36, 0.25);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s, visibility 0.3s;
-    }
-    .modal-overlay.open { opacity: 1; visibility: visible; }
-    .modal {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 40px 36px 32px;
-      width: 100%;
-      max-width: 540px;
-      max-height: 85vh;
-      overflow-y: auto;
-      transform: translateY(16px) scale(0.98);
-      transition: transform 0.3s;
-      position: relative;
-    }
-    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
-    .modal-close {
-      position: absolute;
-      top: 16px; right: 20px;
-      font-size: 1.3rem;
-      color: var(--muted-light);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px;
-      transition: color 0.2s;
-      line-height: 1;
-    }
-    .modal-close:hover { color: var(--fg); }
-    .modal-close:focus-visible { outline: 2px solid var(--accent-sunset); outline-offset: 2px; border-radius: 4px; }
+    /* ── toast ── */
+    .toast-box{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:9000;
+      display:flex;flex-direction:column;align-items:center;gap:8px}
+    .toast{background:var(--fg);color:var(--card);font-family:var(--sans);font-size:.8rem;
+      font-weight:300;padding:11px 24px;border-radius:100px;
+      box-shadow:0 6px 24px rgba(61,46,36,.18);transform:translateY(10px);opacity:0;
+      animation:tin .3s ease forwards;white-space:nowrap}
+    .toast.out{animation:tout .3s ease forwards}
+    @keyframes tin{to{transform:translateY(0);opacity:1}}
+    @keyframes tout{to{transform:translateY(10px);opacity:0}}
 
-    .modal-label {
-      font-family: var(--hand);
-      font-size: 0.95rem;
-      color: var(--muted-light);
-      margin-bottom: 8px;
-      display: block;
-    }
-    .modal-title-input {
-      font-family: var(--serif);
-      font-size: 1.5rem;
-      font-weight: 400;
-      text-transform: lowercase;
-      letter-spacing: 0.02em;
-      color: var(--fg);
-      background: none;
-      border: none;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 12px;
-      margin-bottom: 22px;
-      width: 100%;
-      line-height: 1.3;
-    }
-    .modal-title-input::placeholder { color: var(--muted-light); text-transform: lowercase; }
-    .modal-title-input:focus { outline: none; border-bottom-color: var(--muted-light); }
+    /* ── footer ── */
+    footer{position:relative;z-index:1;text-align:center;padding:40px 24px 64px}
+    .fline{width:32px;height:1px;background:var(--border);margin:0 auto 26px}
+    .fnote{font-family:var(--hand);font-size:1.05rem;color:var(--sunset);line-height:1.65;
+      max-width:400px;margin:0 auto 22px;min-height:1.7em;transition:opacity .6s}
+    .fcredit{font-size:.72rem;color:var(--muted-light);letter-spacing:.04em;text-transform:lowercase}
 
-    .modal-body-input {
-      font-family: var(--sans);
-      font-size: 0.92rem;
-      font-weight: 300;
-      color: var(--fg);
-      background: none;
-      border: none;
-      width: 100%;
-      min-height: 200px;
-      resize: vertical;
-      line-height: 1.85;
-    }
-    .modal-body-input::placeholder { color: var(--muted-light); }
-    .modal-body-input:focus { outline: none; }
+    .empty{text-align:center;padding:56px 20px;color:var(--muted-light)}
+    .empty p{font-family:var(--serif);font-size:1.1rem;font-style:italic;font-weight:300}
 
-    .modal-hint {
-      font-family: var(--hand);
-      font-size: 0.85rem;
-      color: var(--muted-light);
-      margin-top: 8px;
-      opacity: 0.7;
+    /* ── responsive ── */
+    @media(max-width:640px){
+      :root{--hdr:54px}
+      .pcard{padding:26px 20px 22px}.pcard::before{top:20px;bottom:20px}
+      .modal{padding:28px 20px 22px}.mtitle{font-size:1.3rem}
+      .hero{padding:44px 0 32px}
+      .frag{padding:36px 22px;margin:0 -24px;border-radius:20px}
+      .toast-box{bottom:18px;left:16px;right:16px;transform:none}
+      .toast{width:100%;text-align:center;white-space:normal}
+      .mopts{flex-direction:column;gap:14px;align-items:flex-start}
+      .cname-in{width:100%}
+      .blob{filter:blur(70px);opacity:.04!important}
+      .b1{width:280px;height:280px}.b2{width:240px;height:240px}
+      .b3{width:180px;height:180px}.b4{display:none}
+      .bot{display:none}
+      .latest-whisper{max-width:100%}
     }
-
-    .modal-prompt-input {
-      font-family: var(--hand);
-      font-size: 0.95rem;
-      color: var(--fg);
-      background: rgba(242,217,196,0.3);
-      border: none;
-      border-radius: 10px;
-      padding: 14px 16px;
-      margin-top: 20px;
-      width: 100%;
-      line-height: 1.55;
-    }
-    .modal-prompt-input::placeholder { color: var(--muted-light); }
-    .modal-prompt-input:focus { outline: 2px solid var(--border); }
-
-    .modal-options {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 28px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-    }
-    .tone-picker {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .tone-label {
-      font-size: 0.72rem;
-      color: var(--muted-light);
-      margin-right: 2px;
-      text-transform: lowercase;
-      letter-spacing: 0.03em;
-    }
-    .tone-option {
-      width: 24px; height: 24px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-    .tone-option:hover { transform: scale(1.15); }
-    .tone-option.active { border-color: var(--fg); }
-    .tone-option:focus-visible { outline: 2px solid var(--accent-sunset); outline-offset: 2px; }
-
-    .publish-btn {
-      font-family: var(--sans);
-      font-size: 0.8rem;
-      font-weight: 400;
-      letter-spacing: 0.03em;
-      text-transform: lowercase;
-      color: var(--card);
-      background: var(--fg);
-      border: none;
-      padding: 10px 28px;
-      border-radius: 100px;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.15s;
-    }
-    .publish-btn:hover { opacity: 0.82; }
-    .publish-btn:active { transform: scale(0.97); }
-    .publish-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-    .publish-btn:focus-visible { outline: 2px solid var(--accent-sunset); outline-offset: 2px; }
-
-    /* ── Toast ── */
-    .toast-container {
-      position: fixed;
-      bottom: 28px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 9000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-    .toast {
-      background: var(--fg);
-      color: var(--card);
-      font-family: var(--sans);
-      font-size: 0.8rem;
-      font-weight: 300;
-      padding: 11px 24px;
-      border-radius: 100px;
-      box-shadow: 0 6px 24px rgba(61, 46, 36, 0.18);
-      transform: translateY(10px);
-      opacity: 0;
-      animation: toastIn 0.3s ease forwards;
-      white-space: nowrap;
-    }
-    .toast.out { animation: toastOut 0.3s ease forwards; }
-    @keyframes toastIn { to { transform: translateY(0); opacity: 1; } }
-    @keyframes toastOut { to { transform: translateY(10px); opacity: 0; } }
-
-    /* ── Footer ── */
-    footer {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      padding: 48px 24px 64px;
-    }
-    .footer-line {
-      width: 36px; height: 1px;
-      background: var(--border);
-      margin: 0 auto 28px;
-    }
-    .footer-note {
-      font-family: var(--hand);
-      font-size: 1.05rem;
-      color: var(--accent-sunset);
-      line-height: 1.65;
-      max-width: 400px;
-      margin: 0 auto 24px;
-      min-height: 1.7em;
-      transition: opacity 0.6s;
-    }
-    .footer-credit {
-      font-size: 0.72rem;
-      color: var(--muted-light);
-      letter-spacing: 0.04em;
-      text-transform: lowercase;
-    }
-
-    /* ── Empty state ── */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--muted-light);
-    }
-    .empty-state p {
-      font-family: var(--serif);
-      font-size: 1.1rem;
-      font-style: italic;
-      font-weight: 300;
-    }
-
-    /* ── Responsive ── */
-    @media (max-width: 640px) {
-      :root { --header-h: 54px; }
-      .post-card { padding: 28px 22px 24px; }
-      .post-card::before { top: 18px; bottom: 18px; }
-      .modal { padding: 28px 22px 24px; }
-      .modal-title-input { font-size: 1.3rem; }
-      .hero { padding: 48px 0 36px; }
-      .fragment { padding: 40px 24px; margin: 0 -24px; }
-      .toast-container { bottom: 20px; left: 20px; right: 20px; transform: none; }
-      .toast { width: 100%; text-align: center; white-space: normal; }
-      .modal-options { flex-direction: column; gap: 16px; align-items: flex-start; }
-      .comment-name-input { width: 100%; }
-      .warm-shape { filter: blur(70px); opacity: 0.06 !important; }
-      .warm-shape.ws-1 { width: 280px; height: 280px; }
-      .warm-shape.ws-2 { width: 240px; height: 240px; }
-      .warm-shape.ws-3 { width: 200px; height: 200px; }
-      .warm-shape.ws-4 { display: none; }
-      .blur-photo { display: none; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .warm-shape, .hero-title { animation: none !important; }
-      .post-card, .fragment { opacity: 1 !important; transform: none !important; transition: none !important; }
+    @media(prefers-reduced-motion:reduce){
+      .blob,.ld,.hero-title{animation:none!important}
+      .pcard,.frag{opacity:1!important;transform:none!important;transition:none!important}
+      #particles{display:none}
     }
   </style>
 </head>
 <body>
 
-  <!-- Grain texture overlay -->
+  <!-- Grain texture -->
   <svg class="grain" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-    <filter id="gf">
-      <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="3" stitchTiles="stitch"/>
-      <feColorMatrix type="saturate" values="0"/>
-    </filter>
-    <rect width="100%" height="100%" filter="url(#gf)"/>
+    <filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+    <rect width="100%" height="100%" filter="url(#g)"/>
   </svg>
 
-  <!-- Scroll progress -->
-  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <!-- Warm vignette -->
+  <div class="vignette" aria-hidden="true"></div>
 
-  <!-- Warm floating shapes -->
-  <div class="warm-shapes" aria-hidden="true">
-    <div class="warm-shape ws-1"></div>
-    <div class="warm-shape ws-2"></div>
-    <div class="warm-shape ws-3"></div>
-    <div class="warm-shape ws-4"></div>
+  <!-- Particle canvas -->
+  <canvas id="particles" aria-hidden="true"></canvas>
+
+  <!-- Scroll progress -->
+  <div class="scroll-bar" id="sbar" aria-hidden="true"></div>
+
+  <!-- Warm blobs -->
+  <div class="blobs" aria-hidden="true">
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="blob b3"></div><div class="blob b4"></div>
   </div>
 
-  <!-- Blurred photo decorations -->
-  <img class="blur-photo bp-1" src="https://picsum.photos/seed/warmth42/600/600.jpg" alt="" aria-hidden="true">
-  <img class="blur-photo bp-2" src="https://picsum.photos/seed/bloom88/500/500.jpg" alt="" aria-hidden="true">
+  <!-- Blurred botanicals -->
+  <img class="bot bot1" src="https://picsum.photos/seed/peachbloom7/600/600.jpg" alt="" aria-hidden="true">
+  <img class="bot bot2" src="https://picsum.photos/seed/coralpetal3/500/500.jpg" alt="" aria-hidden="true">
+  <img class="bot bot3" src="https://picsum.photos/seed/warmlight9/400/400.jpg" alt="" aria-hidden="true">
 
   <!-- Header -->
-  <header id="header">
-    <div class="header-inner">
-      <a href="#" class="logo">still here</a>
+  <header id="hdr">
+    <div class="hdr-in">
+      <a href="#" class="logo-wrap" aria-label="Home">
+        <span class="logo">still here</span>
+        <span class="live-dots" aria-hidden="true"><span class="ld"></span><span class="ld"></span><span class="ld"></span></span>
+      </a>
       <button class="write-btn" id="writeBtn" aria-label="Write a new post">write</button>
     </div>
   </header>
 
   <!-- Reminder strip -->
-  <div class="reminder-strip" id="reminderStrip" aria-live="polite"></div>
+  <div class="reminder" id="reminder" aria-live="polite"></div>
 
-  <!-- Main content -->
+  <!-- Main -->
   <main>
     <section class="hero" aria-label="Introduction">
       <h1 class="hero-title">still here</h1>
       <p class="hero-sub">a place for the things you almost said out loud</p>
     </section>
-    <div id="contentContainer" aria-label="Blog content"></div>
+    <div id="content" aria-label="Blog content"></div>
   </main>
 
   <!-- Write modal -->
-  <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-label="Write a new post">
+  <div class="moverlay" id="moverlay" role="dialog" aria-modal="true" aria-label="Write a new post">
     <div class="modal">
-      <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
-      <label class="modal-label" for="postTitleInput">title</label>
-      <input type="text" class="modal-title-input" id="postTitleInput" placeholder="what this is about" maxlength="120">
-      <label class="modal-label" for="postBodyInput">body</label>
-      <textarea class="modal-body-input" id="postBodyInput" placeholder="what's actually on your mind..."></textarea>
-      <p class="modal-hint">wrap inner thoughts in {curly braces} for handwritten notes</p>
-      <input type="text" class="modal-prompt-input" id="postPromptInput" placeholder="a soft question for the reader (optional)" maxlength="200">
-      <div class="modal-options">
-        <div class="tone-picker">
-          <span class="tone-label">tone</span>
-          <span class="tone-option active" data-tone="sunset" style="background:linear-gradient(135deg,#D4875E,#E8A88A)" tabindex="0" role="radio" aria-checked="true" aria-label="Sunset"></span>
-          <span class="tone-option" data-tone="coral" style="background:linear-gradient(135deg,#C9706B,#E8C4B8)" tabindex="0" role="radio" aria-checked="false" aria-label="Coral"></span>
-          <span class="tone-option" data-tone="amber" style="background:linear-gradient(135deg,#C4956A,#D4B896)" tabindex="0" role="radio" aria-checked="false" aria-label="Amber"></span>
+      <button class="mclose" id="mclose" aria-label="Close">&times;</button>
+      <label class="mlabel" for="mt">title</label>
+      <input type="text" class="mtitle" id="mt" placeholder="what this is about" maxlength="120">
+      <label class="mlabel" for="mb">body</label>
+      <textarea class="mbody" id="mb" placeholder="what's actually on your mind..."></textarea>
+      <p class="mhint">wrap inner thoughts in {curly braces} for handwritten notes</p>
+      <input type="text" class="mprompt" id="mp" placeholder="a soft question for the reader (optional)" maxlength="200">
+      <div class="mopts">
+        <div class="tpicker">
+          <span class="tlbl">tone</span>
+          <span class="topt active" data-t="sunset" style="background:linear-gradient(135deg,#D4875E,#E8A88A)" tabindex="0" role="radio" aria-checked="true" aria-label="Sunset"></span>
+          <span class="topt" data-t="coral" style="background:linear-gradient(135deg,#C9706B,#E8C4B8)" tabindex="0" role="radio" aria-checked="false" aria-label="Coral"></span>
+          <span class="topt" data-t="amber" style="background:linear-gradient(135deg,#C4956A,#D4B896)" tabindex="0" role="radio" aria-checked="false" aria-label="Amber"></span>
         </div>
-        <button class="publish-btn" id="publishBtn" disabled>publish</button>
+        <button class="pub-btn" id="pubBtn" disabled>publish</button>
       </div>
     </div>
   </div>
 
-  <!-- Toast container -->
-  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+  <!-- Toast -->
+  <div class="toast-box" id="toasts" aria-live="polite"></div>
 
   <!-- Footer -->
   <footer>
-    <div class="footer-line"></div>
-    <p class="footer-note" id="footerNote"></p>
-    <p class="footer-credit">a quiet space for honest thinking</p>
+    <div class="fline"></div>
+    <p class="fnote" id="fnote"></p>
+    <p class="fcredit">a quiet space for honest thinking</p>
   </footer>
 
   <script>
-    /* ── Default posts ── */
+    /* ═══════════════ DATA ═══════════════ */
     const DEFAULT_POSTS = [
-      {
-        id: 'p1', tone: 'sunset',
-        title: 'the performance of being okay',
-        body: `you know the version of yourself that shows up at dinner parties, at work, in text messages—the one who laughs at the right time and asks how you're doing before anyone can ask you? that's not you. that's a skill you developed so early you forgot it was one.\n\n{this is the part nobody warns you about—getting so good at performing okay that you lose access to the real thing}\n\nwe've turned healing into content. into five-step frameworks and morning routines and "i'm doing the work" captions beneath sunset photos. and maybe some of it is real. but some of it is just a more aesthetically pleasing version of the same avoidance.\n\nreal healing doesn't look like a glow-up. it looks like sitting in your car outside your own house for twenty minutes because the transition between who you are out there and who you are alone feels like crossing a border you don't have the right papers for.`,
-        date: '2025-01-15',
-        prompt: 'what would it look like to stop performing healed—and just be honest about where you actually are?',
-        comments: [
-          { id: 'c1', text: 'i read this sitting in my car. outside my own house. i don\'t know if that\'s poetic or just sad.', name: '', date: '2025-01-16T09:30:00' },
-          { id: 'c2', text: 'the "aesthetically pleasing version of the same avoidance" line is going to live in my head rent-free.', name: 'mira', date: '2025-01-16T14:20:00' }
-        ]
-      },
-      {
-        id: 'p2', tone: 'coral',
-        title: 'what you don\'t say is still speaking',
-        body: `most of the damage between people doesn't come from what's said. it comes from the architecture of silence around what isn't.\n\nyou know the exact sentence that would change everything. you've written it in your head a hundred times. but you've also calculated the cost of saying it—the ripple, the awkwardness, the possibility that the other person won't meet you there—and you keep choosing the safer silence.\n\n{we don't not-say things because we don't know how. we don't say them because we know exactly what happens next, and we're not ready}\n\nthe silent pressure isn't just about holding words in. it's about existing in two conversations at once—the one happening out loud and the real one happening inside your head—and carrying the gap between them like a second body.\n\nsometimes the most violent thing you can do to a relationship is keep it comfortable.`,
-        date: '2025-01-22',
-        prompt: 'if you said the one thing you\'ve been rehearsing—imperfectly, without the right timing—what\'s the actual worst that could happen?',
-        comments: []
-      },
-      {
-        id: 'p3', tone: 'amber',
-        title: 'the weight of fine',
-        body: `"i'm fine" isn't a lie. that's what makes it so heavy.\n\nyou are fine. structurally. functionally. you get up, you show up, you perform the basic arithmetic of being a person. but fine and okay aren't the same thing, and we've collapsed them into one word because the gap between them is too uncomfortable to name.\n\n{fine is surviving. okay is living. most of us haven't checked which one we're doing in months}\n\nthe real weight isn't the not-being-okay. it's the energy required to make the not-being-okay invisible. the editing. the smiling when someone asks how your weekend was. the way you've learned to talk about your mental health in language that reassures other people instead of actually describing what's happening inside you.\n\nyou're not hiding. you're translating. and translation always loses something.`,
-        date: '2025-02-03',
-        prompt: 'you don\'t need to name what\'s wrong right now. but can you stop pretending nothing is?',
-        comments: [
-          { id: 'c3', text: '"you\'re not hiding. you\'re translating." i\'ve never heard it put that way. thank you.', name: '', date: '2025-02-04T08:15:00' }
-        ]
-      },
-      {
-        id: 'p4', tone: 'sunset',
-        title: 'knowing isn\'t changing',
-        body: `self-awareness has become the new spirituality. the more you understand your patterns, the more enlightened you're supposed to be. but understanding has a dark side: it can become a form of control.\n\n{the most self-aware people i know are also the most stuck. because they've turned their pain into data, and data doesn't heal}\n\nyou can map your attachment style, name your defense mechanisms, trace your triggers back to childhood, and still—still—repeat the same loop. because insight lives in the mind and change lives in the body, and the distance between those two places is where most of us get stranded.\n\n"i know i do this" has become a way of saying it without doing anything about it. a kind of intellectual apology. i see my pattern, therefore i am exempt from it.\n\nbut awareness without action is just a more sophisticated hiding place.`,
-        date: '2025-02-18',
-        prompt: 'what\'s one thing you understand completely about yourself but haven\'t changed? not as a judgment—as a door you haven\'t walked through yet.',
-        comments: []
-      },
-      {
-        id: 'p5', tone: 'coral',
-        title: 'quietly hard to love',
-        body: `not the dramatic kind. not the kind that makes for good stories or compelling therapy sessions. the quiet kind—the kind that shows up in the space between what someone offers you and what you're able to receive.\n\n{you don't mean to make love feel like work. but somewhere you learned that being easy to love means being easy to leave}\n\nit's in the way you deflect compliments like they're accusations. in the three-hour gap between receiving a text and answering it—technically a response, emotionally a wall. in how you make someone feel like they're doing well instead of making them feel like it's natural.\n\nyou've made closeness feel like an achievement to be earned rather than a state to exist in. and when people get tired of earning it, you think: i knew it. i knew i was too much.\n\nbut you weren't too much. you were too careful. and care can feel exactly like distance to someone who just wants to be close to you.`,
-        date: '2025-03-02',
-        prompt: 'if someone who loves you could read this—what would you want them to know that you\'ve never been able to say directly?',
-        comments: [
-          { id: 'c4', text: 'sent this to someone. we sat in silence for ten minutes after. then they held my hand. that\'s it. that\'s the whole story.', name: '', date: '2025-03-03T22:40:00' },
-          { id: 'c5', text: '"care can feel exactly like distance." i think about this every day and didn\'t have words for it until now.', name: 's.', date: '2025-03-04T11:00:00' },
-          { id: 'c6', text: 'the handwritten note in the middle—about being easy to love meaning easy to leave—that broke something open in me.', name: '', date: '2025-03-05T19:25:00' }
-        ]
-      }
+      {id:'p1',tone:'sunset',
+        title:'the performance of being okay',
+        body:'you know the version of yourself that shows up at dinner parties, at work, in text messages—the one who laughs at the right time and asks how you\'re doing before anyone can ask you? that\'s not you. that\'s a skill you developed so early you forgot it was one.\n\n{this is the part nobody warns you about—getting so good at performing okay that you lose access to the real thing}\n\nwe\'ve turned healing into content. into five-step frameworks and morning routines and "i\'m doing the work" captions beneath sunset photos. and maybe some of it is real. but some of it is just a more aesthetically pleasing version of the same avoidance.\n\nreal healing doesn\'t look like a glow-up. it looks like sitting in your car outside your own house for twenty minutes because the transition between who you are out there and who you are alone feels like crossing a border you don\'t have the right papers for.',
+        date:'2025-01-15',
+        prompt:'what would it look like to stop performing healed—and just be honest about where you actually are?',
+        comments:[
+          {id:'c1',text:'i read this sitting in my car. outside my own house. i don\'t know if that\'s poetic or just sad.',name:'',date:'2025-01-16T09:30:00'},
+          {id:'c2',text:'the "aesthetically pleasing version of the same avoidance" line is going to live in my head rent-free.',name:'mira',date:'2025-01-16T14:20:00'}
+        ]},
+      {id:'p2',tone:'coral',
+        title:'what you don\'t say is still speaking',
+        body:'most of the damage between people doesn\'t come from what\'s said. it comes from the architecture of silence around what isn\'t.\n\nyou know the exact sentence that would change everything. you\'ve written it in your head a hundred times. but you\'ve also calculated the cost of saying it—the ripple, the awkwardness, the possibility that the other person won\'t meet you there—and you keep choosing the safer silence.\n\n{we don\'t not-say things because we don\'t know how. we don\'t say them because we know exactly what happens next, and we\'re not ready}\n\nthe silent pressure isn\'t just about holding words in. it\'s about existing in two conversations at once—the one happening out loud and the real one happening inside your head—and carrying the gap between them like a second body.\n\nsometimes the most violent thing you can do to a relationship is keep it comfortable.',
+        date:'2025-01-22',
+        prompt:'if you said the one thing you\'ve been rehearsing—imperfectly, without the right timing—what\'s the actual worst that could happen?',
+        comments:[]},
+      {id:'p3',tone:'amber',
+        title:'the weight of fine',
+        body:'"i\'m fine" isn\'t a lie. that\'s what makes it so heavy.\n\nyou are fine. structurally. functionally. you get up, you show up, you perform the basic arithmetic of being a person. but fine and okay aren\'t the same thing, and we\'ve collapsed them into one word because the gap between them is too uncomfortable to name.\n\n{fine is surviving. okay is living. most of us haven\'t checked which one we\'re doing in months}\n\nthe real weight isn\'t the not-being-okay. it\'s the energy required to make the not-being-okay invisible. the editing. the smiling when someone asks how your weekend was. the way you\'ve learned to talk about your mental health in language that reassures other people instead of actually describing what\'s happening inside you.\n\nyou\'re not hiding. you\'re translating. and translation always loses something.',
+        date:'2025-02-03',
+        prompt:'you don\'t need to name what\'s wrong right now. but can you stop pretending nothing is?',
+        comments:[
+          {id:'c3',text:'"you\'re not hiding. you\'re translating." i\'ve never heard it put that way. thank you.',name:'',date:'2025-02-04T08:15:00'}
+        ]},
+      {id:'p4',tone:'sunset',
+        title:'knowing isn\'t changing',
+        body:'self-awareness has become the new spirituality. the more you understand your patterns, the more enlightened you\'re supposed to be. but understanding has a dark side: it can become a form of control.\n\n{the most self-aware people i know are also the most stuck. because they\'ve turned their pain into data, and data doesn\'t heal}\n\nyou can map your attachment style, name your defense mechanisms, trace your triggers back to childhood, and still—still—repeat the same loop. because insight lives in the mind and change lives in the body, and the distance between those two places is where most of us get stranded.\n\n"i know i do this" has become a way of saying it without doing anything about it. a kind of intellectual apology. i see my pattern, therefore i am exempt from it.\n\nbut awareness without action is just a more sophisticated hiding place.',
+        date:'2025-02-18',
+        prompt:'what\'s one thing you understand completely about yourself but haven\'t changed? not as a judgment—as a door you haven\'t walked through yet.',
+        comments:[]},
+      {id:'p5',tone:'coral',
+        title:'quietly hard to love',
+        body:'not the dramatic kind. not the kind that makes for good stories or compelling therapy sessions. the quiet kind—the kind that shows up in the space between what someone offers you and what you\'re able to receive.\n\n{you don\'t mean to make love feel like work. but somewhere you learned that being easy to love means being easy to leave}\n\nit\'s in the way you deflect compliments like they\'re accusations. in the three-hour gap between receiving a text and answering it—technically a response, emotionally a wall. in how you make someone feel like they\'re doing well instead of making them feel like it\'s natural.\n\nyou\'ve made closeness feel like an achievement to be earned rather than a state to exist in. and when people get tired of earning it, you think: i knew it. i knew i was too much.\n\nbut you weren\'t too much. you were too careful. and care can feel exactly like distance to someone who just wants to be close to you.',
+        date:'2025-03-02',
+        prompt:'if someone who loves you could read this—what would you want them to know that you\'ve never been able to say directly?',
+        comments:[
+          {id:'c4',text:'sent this to someone. we sat in silence for ten minutes after. then they held my hand. that\'s it. that\'s the whole story.',name:'',date:'2025-03-03T22:40:00'},
+          {id:'c5',text:'"care can feel exactly like distance." i think about this every day and didn\'t have words for it until now.',name:'s.',date:'2025-03-04T11:00:00'},
+          {id:'c6',text:'the handwritten note in the middle—about being easy to love meaning easy to leave—that broke something open in me.',name:'',date:'2025-03-05T19:25:00'}
+        ]}
     ];
 
-    /* ── Fragments (visual pauses) ── */
     const FRAGMENTS = [
       'you are not too much. the world is just not used to softness that knows itself.',
       'not everything broken needs fixing. some things just need witnessing.',
@@ -954,331 +455,375 @@
       "growth doesn't always look like moving forward. sometimes it looks like staying still long enough to feel.",
       "healing isn't linear. it's not even a line. it's more like weather.",
       "you don't have to explain why you're tired. sometimes tired is just tired.",
-      "the version of you that's exhausted—that's not the broken version. that's the honest one."
+      "the version of you that's exhausted—that's not the broken version. that's the honest one.",
+      "what if the thing you're avoiding isn't the conversation—it's the version of yourself that has it?",
+      "being gentle with yourself isn't weakness. it's the thing you were never taught.",
+      "you're allowed to outgrow people who only knew the version of you that was small.",
+      "silence isn't empty. sometimes it's full of everything you couldn't say."
     ];
 
-    /* ── Reminder strip messages ── */
-    const STRIP_REMINDERS = [
-      'you don\'t have to have it all figured out to be allowed to rest',
-      'being gentle with yourself isn\'t giving up—it\'s giving in to what you actually need',
-      'whatever you\'re carrying, you can set it down for a minute. it\'ll still be there if you need it',
-      'you\'re allowed to want things without knowing how to ask for them',
-      'today doesn\'t need to be productive to be valid',
-      'the fact that you\'re here, reading this, paying attention to your inner world—that\'s not nothing',
+    const STRIP_MSGS = [
+      "you don't have to have it all figured out to be allowed to rest",
+      "being gentle with yourself isn't giving up—it's giving in to what you actually need",
+      "whatever you're carrying, you can set it down for a minute",
+      "you're allowed to want things without knowing how to ask for them",
+      "today doesn't need to be productive to be valid",
+      "the fact that you're here, reading this, paying attention—that's not nothing",
+      "you don't owe anyone a performance of wellness. least of all yourself.",
+      "rest is not a reward. it's a requirement."
     ];
 
-    /* ── Footer closing notes ── */
-    const FOOTER_NOTES = [
-      'before you go—drink some water. the thinking can wait.',
-      'whatever you\'re carrying right now, you\'re allowed to set it down. even just for tonight.',
-      'you showed up today. that\'s the whole requirement.',
-      'the world won\'t fall apart if you stop managing everyone\'s feelings for one evening.',
-      'sleep well. tomorrow is just another chance to be honest with yourself.',
-      'you don\'t owe anyone a performance of wellness. least of all yourself.',
+    const FOOTER_MSGS = [
+      "before you go—drink some water. the thinking can wait.",
+      "whatever you're carrying right now, you're allowed to set it down. even just for tonight.",
+      "you showed up today. that's the whole requirement.",
+      "the world won't fall apart if you stop managing everyone's feelings for one evening.",
+      "sleep well. tomorrow is just another chance to be honest with yourself.",
+      "you're doing better than the version of you that thinks you aren't.",
+      "this is your reminder that existing is enough."
     ];
 
-    /* ── Storage ── */
-    function loadPosts() {
-      try {
-        const s = localStorage.getItem('stillhere_posts');
-        if (s) return JSON.parse(s);
-      } catch(e) {}
-      return JSON.parse(JSON.stringify(DEFAULT_POSTS));
-    }
-    function savePosts(p) {
-      try { localStorage.setItem('stillhere_posts', JSON.stringify(p)); } catch(e) {}
-    }
+    const DECO = ['fd1','fd2','fd3','fd4'];
+    const FGRADS = ['fg1','fg2','fg3','fg4'];
 
-    /* ── State ── */
-    let posts = loadPosts();
-    let selectedTone = 'sunset';
-    let stripIdx = Math.floor(Math.random() * STRIP_REMINDERS.length);
-    let footerIdx = Math.floor(Math.random() * FOOTER_NOTES.length);
+    /* ═══════════════ STORAGE ═══════════════ */
+    function load(){try{const s=localStorage.getItem('sh_posts');if(s)return JSON.parse(s)}catch(e){}return JSON.parse(JSON.stringify(DEFAULT_POSTS))}
+    function save(p){try{localStorage.setItem('sh_posts',JSON.stringify(p))}catch(e){}}
 
-    /* ── Utilities ── */
-    function esc(s) {
-      const d = document.createElement('div');
-      d.textContent = s;
-      return d.innerHTML;
-    }
-    function fmtDate(d) {
-      return new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-    }
-    function relTime(d) {
-      const diff = Date.now() - new Date(d).getTime();
-      const m = Math.floor(diff / 60000);
-      if (m < 1) return 'just now';
-      if (m < 60) return m + ' min ago';
-      const h = Math.floor(m / 60);
-      if (h < 24) return h + (h === 1 ? ' hour ago' : ' hours ago');
-      const days = Math.floor(h / 24);
-      if (days < 7) return days + (days === 1 ? ' day ago' : ' days ago');
-      return fmtDate(d);
-    }
-    function readTime(t) {
-      return Math.max(1, Math.ceil(t.split(/\s+/).filter(Boolean).length / 200)) + ' min read';
-    }
-    function uid() {
-      return 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
-    }
+    /* ═══════════════ STATE ═══════════════ */
+    let posts = load();
+    let selTone = 'sunset';
+    let sIdx = Math.floor(Math.random()*STRIP_MSGS.length);
+    let fIdx = Math.floor(Math.random()*FOOTER_MSGS.length);
+    let lastCommentId = null; // track newly added comment for highlight
 
-    /* ── Body to HTML (with inner note support) ── */
-    function bodyHTML(text) {
-      return text.split('\n\n').map(p => {
-        let s = esc(p.trim());
-        s = s.replace(/\{([^}]+)\}/g, '<span class="inner-note">$1</span>');
-        return '<p>' + s + '</p>';
+    /* ═══════════════ UTILS ═══════════════ */
+    const esc = s => {const d=document.createElement('div');d.textContent=s;return d.innerHTML};
+    const fmtD = d => new Date(d).toLocaleDateString('en-US',{month:'long',day:'numeric'});
+    function relT(d){
+      const m=Math.floor((Date.now()-new Date(d).getTime())/60000);
+      if(m<1)return 'just now';if(m<60)return m+' min ago';
+      const h=Math.floor(m/60);if(h<24)return h+(h===1?' hour ago':' hours ago');
+      const dy=Math.floor(h/24);if(dy<7)return dy+(dy===1?' day ago':' days ago');return fmtD(d);
+    }
+    const rdT = t => Math.max(1,Math.ceil(t.split(/\s+/).filter(Boolean).length/200))+' min read';
+    const uid = () => 'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+
+    function bodyHTML(text){
+      return text.split('\n\n').map(p=>{
+        let s=esc(p.trim());
+        s=s.replace(/\{([^}]+)\}/g,'<span class="inner-note">$1</span>');
+        return '<p>'+s+'</p>';
       }).join('');
     }
 
-    /* ── Toast ── */
-    function toast(msg) {
-      const c = document.getElementById('toastContainer');
-      const t = document.createElement('div');
-      t.className = 'toast';
-      t.textContent = msg;
+    /* ═══════════════ PARTICLES ═══════════════ */
+    const cvs = document.getElementById('particles');
+    const ctx = cvs.getContext('2d');
+    let particles = [];
+    const PCOLORS = ['#E8A88A','#D4875E','#C9706B','#E8C4B8','#C4956A','#D4B896'];
+    const PCOUNT = 28;
+
+    function resizeCvs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight}
+    window.addEventListener('resize', resizeCvs);
+    resizeCvs();
+
+    function initParticles(){
+      particles=[];
+      for(let i=0;i<PCOUNT;i++){
+        particles.push({
+          x: Math.random()*cvs.width,
+          y: Math.random()*cvs.height*0.7, // bias toward top
+          r: Math.random()*1.8+0.4,
+          o: Math.random()*0.2+0.06,
+          vy: -(Math.random()*0.15+0.04),
+          vx: (Math.random()-0.5)*0.1,
+          c: PCOLORS[Math.floor(Math.random()*PCOLORS.length)],
+          phase: Math.random()*Math.PI*2
+        });
+      }
+    }
+    initParticles();
+
+    let reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function drawParticles(){
+      if(reduceMotion) return;
+      ctx.clearRect(0,0,cvs.width,cvs.height);
+      const t=Date.now()*0.001;
+      particles.forEach(p=>{
+        p.x+=p.vx+Math.sin(t+p.phase)*0.05;
+        p.y+=p.vy;
+        // wrap
+        if(p.y<-10){p.y=cvs.height+10;p.x=Math.random()*cvs.width}
+        if(p.x<-10)p.x=cvs.width+10;
+        if(p.x>cvs.width+10)p.x=-10;
+        const flicker = 0.7+0.3*Math.sin(t*1.5+p.phase);
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,Math.max(0.1,p.r),0,Math.PI*2);
+        ctx.fillStyle=p.c;
+        ctx.globalAlpha=p.o*flicker;
+        ctx.fill();
+      });
+      ctx.globalAlpha=1;
+      requestAnimationFrame(drawParticles);
+    }
+    drawParticles();
+
+    /* ═══════════════ TOAST ═══════════════ */
+    function toast(msg){
+      const c=document.getElementById('toasts');
+      const t=document.createElement('div');t.className='toast';t.textContent=msg;
       c.appendChild(t);
-      setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, 2800);
+      setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),300)},2800);
     }
 
-    /* ── Render all content ── */
-    function render() {
-      const container = document.getElementById('contentContainer');
+    /* ═══════════════ RENDER ═══════════════ */
+    function render(){
+      const el=document.getElementById('content');
+      if(!posts.length){el.innerHTML='<div class="empty"><p>nothing here yet. the silence is yours to fill.</p></div>';observe();return}
 
-      if (posts.length === 0) {
-        container.innerHTML = '<div class="empty-state"><p>nothing here yet. the silence is yours to fill.</p></div>';
-        observeAll();
-        return;
-      }
+      let html='';let fi=0;
+      posts.forEach((post,i)=>{
+        // fragment
+        const frag=FRAGMENTS[fi%FRAGMENTS.length];
+        const gc=FGRADS[fi%FGRADS.length];
+        const dc=DECO[fi%DECO.length];
+        html+=`<div class="frag ${gc}"><div class="frag-deco ${dc}"></div><div class="frag-line" style="margin-bottom:18px"></div><p class="frag-text">${esc(frag)}</p><div class="frag-line" style="margin-top:18px"></div></div>`;
+        fi++;
 
-      let html = '';
-      let fIdx = 0;
-      const fGrads = ['grad-1','grad-2','grad-3','grad-4'];
+        // latest whisper preview
+        let whisperHTML='';
+        if(post.comments&&post.comments.length>0){
+          const last=post.comments[post.comments.length-1];
+          const cname=last.name?esc(last.name):'a reader';
+          whisperHTML=`<div class="latest-whisper"><strong>${cname}:</strong> ${esc(last.text)}</div>`;
+        }
 
-      posts.forEach((post, i) => {
-        // Fragment before each post
-        const frag = FRAGMENTS[fIdx % FRAGMENTS.length];
-        html += `
-          <div class="fragment ${fGrads[fIdx % fGrads.length]}">
-            <div class="fragment-deco" style="margin-bottom:20px"></div>
-            <p class="fragment-text">${esc(frag)}</p>
-            <div class="fragment-deco" style="margin-top:20px"></div>
-          </div>`;
-        fIdx++;
+        // comments
+        const cc=post.comments?post.comments.length:0;
+        let cList='';
+        if(cc>0){
+          cList=post.comments.map(c=>{
+            const isNew=c.id===lastCommentId;
+            return `<div class="citem${isNew?' highlight':''}">
+              <div class="chdr"><span class="cname ${c.name?'':'anon'}">${c.name?esc(c.name):'a reader'}</span><span class="cdate">${relT(c.date)}</span></div>
+              <p class="ctxt">${esc(c.text)}</p></div>`;
+          }).join('');
+        }
 
-        // Post card
-        const cCount = post.comments ? post.comments.length : 0;
-        const cList = post.comments && post.comments.length > 0
-          ? post.comments.map(c => `
-            <div class="comment-item">
-              <div class="comment-header">
-                <span class="comment-name ${c.name ? '' : 'anon'}">${c.name ? esc(c.name) : 'a reader'}</span>
-                <span class="comment-date">${relTime(c.date)}</span>
-              </div>
-              <p class="comment-text">${esc(c.text)}</p>
-            </div>`).join('')
-          : '';
+        const promptHTML=post.prompt?`<div class="pdiv"></div><div class="pprompt">${esc(post.prompt)}</div>`:'';
 
-        const promptHTML = post.prompt
-          ? `<div class="post-divider"></div><div class="post-prompt">${esc(post.prompt)}</div>`
-          : '';
-
-        html += `
-          <article class="post-card tone-${post.tone || 'sunset'}" data-id="${post.id}" style="transition-delay:${i * 0.06}s">
-            <div class="post-meta">
-              <span>${fmtDate(post.date)}</span>
-              <span class="dot"></span>
-              <span>${readTime(post.body)}</span>
+        html+=`<article class="pcard t-${post.tone||'sunset'}" data-id="${post.id}" style="transition-delay:${i*0.05}s">
+          <div class="pmeta"><span>${fmtD(post.date)}</span><span class="dot"></span><span>${rdT(post.body)}</span></div>
+          <h2 class="ptitle">${esc(post.title)}</h2>
+          <div class="pbody">${bodyHTML(post.body)}</div>
+          ${promptHTML}
+          <p class="psignoff">— take what you need.</p>
+          ${whisperHTML}
+          <button class="ctoggle" data-pid="${post.id}" aria-expanded="false" aria-controls="cs-${post.id}">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            ${cc===0?'respond':cc+(cc===1?' response':' responses')}
+            <span class="arr">&#9660;</span>
+          </button>
+          <div class="csec" id="cs-${post.id}">
+            <div class="cinner">
+              ${cList?'<div class="clist">'+cList+'</div>':''}
+              <form class="cform" data-pid="${post.id}">
+                <input type="text" class="cname-in" placeholder="your name (optional)" maxlength="40" aria-label="Your name">
+                <textarea class="ctxt-in" placeholder="what this brought up for you..." required aria-label="Your response"></textarea>
+                <button type="submit" class="csubmit">send</button>
+              </form>
             </div>
-            <h2 class="post-title">${esc(post.title)}</h2>
-            <div class="post-body">${bodyHTML(post.body)}</div>
-            ${promptHTML}
-            <p class="post-signoff">— take what you need.</p>
-            <button class="comment-toggle" data-pid="${post.id}" aria-expanded="false" aria-controls="cs-${post.id}">
-              <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              ${cCount === 0 ? 'respond' : cCount + (cCount === 1 ? ' response' : ' responses')}
-              <span class="arrow">&#9660;</span>
-            </button>
-            <div class="comments-section" id="cs-${post.id}">
-              <div class="comments-inner">
-                ${cList ? '<div class="comment-list">' + cList + '</div>' : ''}
-                <form class="comment-form" data-pid="${post.id}">
-                  <input type="text" class="comment-name-input" placeholder="your name (optional)" maxlength="40" aria-label="Your name">
-                  <textarea class="comment-textarea" placeholder="what this brought up for you..." required aria-label="Your response"></textarea>
-                  <button type="submit" class="comment-submit">send</button>
-                </form>
-              </div>
-            </div>
-          </article>`;
+          </div>
+        </article>`;
       });
 
-      container.innerHTML = html;
-      observeAll();
-    }
-
-    /* ── Intersection Observer ── */
-    let obs = null;
-    function observeAll() {
-      if (obs) obs.disconnect();
-      obs = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            e.target.classList.add('visible');
-            obs.unobserve(e.target);
-          }
+      // whispers section
+      const allComments=[];
+      posts.forEach(p=>{
+        if(p.comments) p.comments.forEach(c=>{
+          allComments.push({...c, postTitle:p.title, postId:p.id});
         });
-      }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
-      document.querySelectorAll('.post-card, .fragment').forEach(el => obs.observe(el));
+      });
+      allComments.sort((a,b)=>new Date(b.date)-new Date(a.date));
+
+      if(allComments.length>=2){
+        const top3=allComments.slice(0,3);
+        html+=`<section class="whispers" aria-label="Recent responses"><p class="whispers-head">recent whispers</p>`;
+        top3.forEach(c=>{
+          const from=c.name?esc(c.name):'a reader';
+          html+=`<div class="witem">
+            <div class="wmeta"><span class="wfrom">${from}</span> · ${relT(c.date)}</div>
+            <p class="wtext">${esc(c.text)}</p>
+            <p class="wcontext">on "${esc(c.postTitle)}"</p>
+          </div>`;
+        });
+        html+=`</section>`;
+      }
+
+      el.innerHTML=html;
+      lastCommentId=null;
+      observe();
     }
 
-    /* ── Event delegation ── */
-    document.getElementById('contentContainer').addEventListener('click', (e) => {
-      const btn = e.target.closest('.comment-toggle');
-      if (!btn) return;
-      const pid = btn.dataset.pid;
-      const sec = document.getElementById('cs-' + pid);
-      const isOpen = sec.classList.contains('open');
+    /* ═══════════════ OBSERVER ═══════════════ */
+    let obs=null;
+    function observe(){
+      if(obs)obs.disconnect();
+      obs=new IntersectionObserver(entries=>{
+        entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target)}});
+      },{threshold:.07,rootMargin:'0px 0px -25px 0px'});
+      document.querySelectorAll('.pcard,.frag').forEach(el=>obs.observe(el));
+    }
+
+    /* ═══════════════ EVENTS ═══════════════ */
+    const contentEl=document.getElementById('content');
+
+    contentEl.addEventListener('click',e=>{
+      const btn=e.target.closest('.ctoggle');
+      if(!btn)return;
+      const pid=btn.dataset.pid;
+      const sec=document.getElementById('cs-'+pid);
+      const isOpen=sec.classList.contains('open');
       sec.classList.toggle('open');
       btn.classList.toggle('open');
-      btn.setAttribute('aria-expanded', !isOpen);
+      btn.setAttribute('aria-expanded',!isOpen);
     });
 
-    document.getElementById('contentContainer').addEventListener('submit', (e) => {
-      if (!e.target.classList.contains('comment-form')) return;
+    contentEl.addEventListener('submit',e=>{
+      if(!e.target.classList.contains('cform'))return;
       e.preventDefault();
-      const pid = e.target.dataset.pid;
-      const ta = e.target.querySelector('.comment-textarea');
-      const ni = e.target.querySelector('.comment-name-input');
-      const text = ta.value.trim();
-      if (!text) return;
-      const post = posts.find(p => p.id === pid);
-      if (!post) return;
-      if (!post.comments) post.comments = [];
-      post.comments.push({ id: uid(), text, name: ni.value.trim(), date: new Date().toISOString() });
-      savePosts(posts);
-      ta.value = '';
-      ni.value = '';
+      const pid=e.target.dataset.pid;
+      const ta=e.target.querySelector('.ctxt-in');
+      const ni=e.target.querySelector('.cname-in');
+      const text=ta.value.trim();
+      if(!text)return;
+      const post=posts.find(p=>p.id===pid);
+      if(!post)return;
+      if(!post.comments)post.comments=[];
+      const newId=uid();
+      post.comments.push({id:newId,text,name:ni.value.trim(),date:new Date().toISOString()});
+      lastCommentId=newId;
+      save(posts);ta.value='';ni.value='';
+      // remember which comment sections are open
+      const openPids=[];
+      document.querySelectorAll('.ctoggle.open').forEach(b=>openPids.push(b.dataset.pid));
       render();
-      requestAnimationFrame(() => {
-        const sec = document.getElementById('cs-' + pid);
-        const btn = document.querySelector(`.comment-toggle[data-pid="${pid}"]`);
-        if (sec) sec.classList.add('open');
-        if (btn) { btn.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
+      // restore open states
+      requestAnimationFrame(()=>{
+        openPids.forEach(opid=>{
+          const s=document.getElementById('cs-'+opid);
+          const b=document.querySelector(`.ctoggle[data-pid="${opid}"]`);
+          if(s)s.classList.add('open');
+          if(b){b.classList.add('open');b.setAttribute('aria-expanded','true')}
+        });
+        // always open the one just commented on
+        const ns=document.getElementById('cs-'+pid);
+        const nb=document.querySelector(`.ctoggle[data-pid="${pid}"]`);
+        if(ns)ns.classList.add('open');
+        if(nb){nb.classList.add('open');nb.setAttribute('aria-expanded','true')}
       });
       toast('response added');
     });
 
-    /* ── Modal ── */
-    const overlay = document.getElementById('modalOverlay');
-    const tInput = document.getElementById('postTitleInput');
-    const bInput = document.getElementById('postBodyInput');
-    const pInput = document.getElementById('postPromptInput');
-    const pubBtn = document.getElementById('publishBtn');
+    /* ═══════════════ MODAL ═══════════════ */
+    const mo=document.getElementById('moverlay');
+    const mt=document.getElementById('mt');
+    const mb=document.getElementById('mb');
+    const mp=document.getElementById('mp');
+    const pb=document.getElementById('pubBtn');
 
-    function openModal() {
-      overlay.classList.add('open');
-      document.body.style.overflow = 'hidden';
-      setTimeout(() => tInput.focus(), 120);
-    }
-    function closeModal() {
-      overlay.classList.remove('open');
-      document.body.style.overflow = '';
-      tInput.value = ''; bInput.value = ''; pInput.value = '';
-      pubBtn.disabled = true;
-      selectedTone = 'sunset';
-      document.querySelectorAll('.tone-option').forEach(o => {
-        o.classList.toggle('active', o.dataset.tone === 'sunset');
-        o.setAttribute('aria-checked', o.dataset.tone === 'sunset');
+    function openM(){mo.classList.add('open');document.body.style.overflow='hidden';setTimeout(()=>mt.focus(),120)}
+    function closeM(){
+      mo.classList.remove('open');document.body.style.overflow='';
+      mt.value='';mb.value='';mp.value='';pb.disabled=true;
+      selTone='sunset';
+      document.querySelectorAll('.topt').forEach(o=>{
+        o.classList.toggle('active',o.dataset.t==='sunset');
+        o.setAttribute('aria-checked',o.dataset.t==='sunset');
       });
     }
 
-    document.getElementById('writeBtn').addEventListener('click', openModal);
-    document.getElementById('modalClose').addEventListener('click', closeModal);
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal(); });
+    document.getElementById('writeBtn').addEventListener('click',openM);
+    document.getElementById('mclose').addEventListener('click',closeM);
+    mo.addEventListener('click',e=>{if(e.target===mo)closeM()});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&mo.classList.contains('open'))closeM()});
 
-    function checkPub() { pubBtn.disabled = !(tInput.value.trim() && bInput.value.trim()); }
-    tInput.addEventListener('input', checkPub);
-    bInput.addEventListener('input', checkPub);
+    function checkPub(){pb.disabled=!(mt.value.trim()&&mb.value.trim())}
+    mt.addEventListener('input',checkPub);
+    mb.addEventListener('input',checkPub);
 
-    document.querySelectorAll('.tone-option').forEach(o => {
-      o.addEventListener('click', () => {
-        selectedTone = o.dataset.tone;
-        document.querySelectorAll('.tone-option').forEach(x => {
-          x.classList.toggle('active', x === o);
-          x.setAttribute('aria-checked', x === o);
+    document.querySelectorAll('.topt').forEach(o=>{
+      o.addEventListener('click',()=>{
+        selTone=o.dataset.t;
+        document.querySelectorAll('.topt').forEach(x=>{
+          x.classList.toggle('active',x===o);
+          x.setAttribute('aria-checked',x===o);
         });
       });
-      o.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); o.click(); } });
+      o.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();o.click()}});
     });
 
-    pubBtn.addEventListener('click', () => {
-      const title = tInput.value.trim();
-      const body = bInput.value.trim();
-      if (!title || !body) return;
-      const np = {
-        id: uid(), tone: selectedTone, title, body,
-        date: new Date().toISOString().split('T')[0],
-        prompt: pInput.value.trim() || '',
-        comments: []
-      };
-      posts.unshift(np);
-      savePosts(posts);
-      closeModal();
-      render();
-      requestAnimationFrame(() => {
-        const card = document.querySelector(`.post-card[data-id="${np.id}"]`);
-        if (card) {
-          card.classList.add('new-glow', 'visible');
-          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+    pb.addEventListener('click',()=>{
+      const title=mt.value.trim(),body=mb.value.trim();
+      if(!title||!body)return;
+      const np={id:uid(),tone:selTone,title,body,
+        date:new Date().toISOString().split('T')[0],
+        prompt:mp.value.trim()||'',comments:[]};
+      posts.unshift(np);save(posts);closeM();render();
+      requestAnimationFrame(()=>{
+        const card=document.querySelector(`.pcard[data-id="${np.id}"]`);
+        if(card){card.classList.add('new-glow','vis');card.scrollIntoView({behavior:'smooth',block:'center'})}
       });
       toast('published');
     });
 
-    /* ── Scroll progress & header state ── */
-    const sBar = document.getElementById('scrollProgress');
-    const hdr = document.getElementById('header');
-    let tick = false;
-    window.addEventListener('scroll', () => {
-      if (tick) return;
-      tick = true;
-      requestAnimationFrame(() => {
-        const st = window.scrollY;
-        const dh = document.documentElement.scrollHeight - window.innerHeight;
-        sBar.style.width = (dh > 0 ? (st / dh) * 100 : 0) + '%';
-        hdr.classList.toggle('scrolled', st > 8);
-        tick = false;
+    /* ═══════════════ SCROLL EFFECTS ═══════════════ */
+    const sbar=document.getElementById('sbar');
+    const hdr=document.getElementById('hdr');
+    let tick=false;
+    window.addEventListener('scroll',()=>{
+      if(tick)return;tick=true;
+      requestAnimationFrame(()=>{
+        const st=window.scrollY;
+        const dh=document.documentElement.scrollHeight-window.innerHeight;
+        sbar.style.width=(dh>0?(st/dh)*100:0)+'%';
+        hdr.classList.toggle('scrolled',st>8);
+        tick=false;
       });
     });
 
-    /* ── Reminder strip rotation ── */
-    const stripEl = document.getElementById('reminderStrip');
-    function setStrip() {
-      stripEl.style.opacity = '0';
-      setTimeout(() => {
-        stripEl.textContent = STRIP_REMINDERS[stripIdx % STRIP_REMINDERS.length];
-        stripEl.style.opacity = '1';
-        stripIdx++;
-      }, 500);
-    }
-    setStrip();
-    setInterval(setStrip, 10000);
+    // subtle parallax on botanicals
+    let ptick=false;
+    window.addEventListener('scroll',()=>{
+      if(ptick||reduceMotion)return;ptick=true;
+      requestAnimationFrame(()=>{
+        const st=window.scrollY;
+        document.querySelectorAll('.bot').forEach((el,i)=>{
+          const speed=0.02+i*0.015;
+          el.style.transform=`translateY(${st*speed}px)`;
+        });
+        ptick=false;
+      });
+    });
 
-    /* ── Footer note rotation ── */
-    const footEl = document.getElementById('footerNote');
-    function setFoot() {
-      footEl.style.opacity = '0';
-      setTimeout(() => {
-        footEl.textContent = FOOTER_NOTES[footerIdx % FOOTER_NOTES.length];
-        footEl.style.opacity = '1';
-        footerIdx++;
-      }, 500);
+    /* ═══════════════ ROTATING TEXT ═══════════════ */
+    const remEl=document.getElementById('reminder');
+    function setRem(){
+      remEl.style.opacity='0';
+      setTimeout(()=>{remEl.textContent=STRIP_MSGS[sIdx%STRIP_MSGS.length];remEl.style.opacity='1';sIdx++},500);
     }
-    setFoot();
-    setInterval(setFoot, 14000);
+    setRem();setInterval(setRem,10000);
 
-    /* ── Init ── */
+    const fnEl=document.getElementById('fnote');
+    function setFoot(){
+      fnEl.style.opacity='0';
+      setTimeout(()=>{fnEl.textContent=FOOTER_MSGS[fIdx%FOOTER_MSGS.length];fnEl.style.opacity='1';fIdx++},500);
+    }
+    setFoot();setInterval(setFoot,14000);
+
+    /* ═══════════════ INIT ═══════════════ */
     render();
   </script>
 </body>
