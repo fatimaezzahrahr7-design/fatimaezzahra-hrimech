@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>between the lines</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  ::selection { background: #6B2D3E; color: #F8F6F3; }
+
+  html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+  body {
+    background: #F8F6F3;
+    color: #1A1A1A;
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  .serif { font-family: 'Cormorant Garamond', serif; }
+
+  /* subtle grain texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* abstract blurred weight - top right */
+  .weight-1 {
+    position: fixed;
+    top: -120px;
+    right: -80px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(27,42,74,0.06) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* abstract blurred weight - bottom left */
+  .weight-2 {
+    position: fixed;
+    bottom: -100px;
+    left: -100px;
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(107,45,62,0.05) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(70px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* header */
+  header {
+    padding: 80px 0 60px;
+    border-bottom: 1px solid #D4CFC8;
+  }
+
+  .blog-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    color: #1A1A1A;
+    text-transform: lowercase;
+    margin-bottom: 12px;
+  }
+
+  .blog-subtitle {
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9B9590;
+    margin-bottom: 32px;
+  }
+
+  nav {
+    display: flex;
+    gap: 24px;
+  }
+
+  nav a {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #9B9590;
+    text-decoration: none;
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+    transition: color 0.3s ease;
+    cursor: pointer;
+  }
+
+  nav a:hover { color: #1A1A1A; }
+  nav a.active { color: #1A1A1A; }
+
+  /* posts */
+  .posts { padding: 0; }
+
+  .post {
+    padding: 56px 0;
+    border-bottom: 1px solid #E8E4DF;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: postReveal 0.8s ease-out forwards;
+  }
+
+  .post:first-child { padding-top: 48px; }
+
+  @keyframes postReveal {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .post:nth-child(1) { animation-delay: 0.1s; }
+  .post:nth-child(2) { animation-delay: 0.25s; }
+  .post:nth-child(3) { animation-delay: 0.4s; }
+  .post:nth-child(4) { animation-delay: 0.55s; }
+  .post:nth-child(5) { animation-delay: 0.7s; }
+
+  .post-date {
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #B5AFA8;
+    margin-bottom: 14px;
+  }
+
+  .post-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.65rem;
+    font-weight: 500;
+    line-height: 1.3;
+    color: #1A1A1A;
+    text-transform: lowercase;
+    margin-bottom: 24px;
+    letter-spacing: -0.01em;
+  }
+
+  .post-title .accent-blue { color: #1B2A4A; }
+  .post-title .accent-wine { color: #6B2D3E; }
+
+  .post-body p {
+    font-size: 0.935rem;
+    font-weight: 300;
+    line-height: 1.85;
+    color: #3D3833;
+    margin-bottom: 18px;
+  }
+
+  .post-body p:last-child { margin-bottom: 0; }
+
+  .post-body p.emphasis {
+    color: #1A1A1A;
+    font-weight: 400;
+    padding-left: 14px;
+    border-left: 1px solid #6B2D3E;
+    margin: 28px 0;
+  }
+
+  .post-body p.emphasis-blue {
+    color: #1A1A1A;
+    font-weight: 400;
+    padding-left: 14px;
+    border-left: 1px solid #1B2A4A;
+    margin: 28px 0;
+  }
+
+  .post-body p.muted {
+    color: #9B9590;
+    font-size: 0.85rem;
+    font-style: italic;
+  }
+
+  .post-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #B5AFA8;
+    border: 1px solid #E8E4DF;
+    padding: 4px 10px;
+    margin-top: 24px;
+  }
+
+  .post-tag.wine { color: #6B2D3E; border-color: rgba(107,45,62,0.2); }
+  .post-tag.blue { color: #1B2A4A; border-color: rgba(27,42,74,0.2); }
+
+  /* expanded post view */
+  .post-full { display: none; }
+  .post-full.active { display: block; }
+  .post-listing.hidden { display: none; }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #9B9590;
+    text-decoration: none;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: color 0.3s;
+    margin-bottom: 40px;
+    padding: 8px 0;
+  }
+
+  .back-link:hover { color: #1A1A1A; }
+
+  .back-link svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    fill: none;
+  }
+
+  /* read more */
+  .read-more {
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: #9B9590;
+    text-decoration: none;
+    text-transform: lowercase;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition: color 0.3s;
+    display: inline-block;
+    margin-top: 8px;
+  }
+
+  .read-more:hover { color: #1A1A1A; }
+
+  /* about section */
+  .about-section {
+    display: none;
+    padding: 48px 0 80px;
+  }
+
+  .about-section.active { display: block; }
+
+  .about-text {
+    font-size: 0.935rem;
+    font-weight: 300;
+    line-height: 1.85;
+    color: #3D3833;
+    margin-bottom: 18px;
+  }
+
+  .about-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 500;
+    text-transform: lowercase;
+    margin-bottom: 24px;
+    color: #1A1A1A;
+  }
+
+  /* footer */
+  footer {
+    padding: 40px 0 60px;
+    border-top: 1px solid #E8E4DF;
+    margin-top: 20px;
+  }
+
+  footer p {
+    font-size: 0.7rem;
+    color: #C4BEB7;
+    letter-spacing: 0.03em;
+  }
+
+  /* thin internal divider */
+  .thin-divider {
+    width: 32px;
+    height: 1px;
+    background: #D4CFC8;
+    margin: 36px 0;
+  }
+
+  /* floating trigger words - very subtle */
+  .float-word {
+    position: fixed;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.75rem;
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(27,42,74,0.07);
+    pointer-events: none;
+    z-index: 0;
+    user-select: none;
+  }
+
+  .float-word-1 { top: 30%; right: 8%; transform: rotate(-3deg); }
+  .float-word-2 { top: 55%; left: 5%; transform: rotate(2deg); color: rgba(107,45,62,0.06); }
+  .float-word-3 { top: 78%; right: 12%; transform: rotate(-1deg); }
+
+  /* notification toast */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #1A1A1A;
+    color: #F8F6F3;
+    font-size: 0.78rem;
+    font-weight: 400;
+    padding: 10px 20px;
+    opacity: 0;
+    transition: all 0.4s ease;
+    pointer-events: none;
+    z-index: 100;
+    letter-spacing: 0.02em;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* scroll indicator */
+  .scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 1px;
+    background: #6B2D3E;
+    z-index: 1000;
+    transition: width 0.1s linear;
+    width: 0%;
+  }
+
+  /* responsive */
+  @media (max-width: 640px) {
+    header { padding: 56px 0 44px; }
+    .post { padding: 40px 0; }
+    .post:first-child { padding-top: 36px; }
+    .post-title { font-size: 1.4rem; }
+    .blog-title { font-size: 1.3rem; }
+    .float-word { display: none; }
+    .container { padding: 0 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+<div class="weight-1"></div>
+<div class="weight-2"></div>
+
+<span class="float-word float-word-1">silence</span>
+<span class="float-word float-word-2">ego</span>
+<span class="float-word float-word-3">unsafe</span>
+
+<div class="toast" id="toast"></div>
+
+<div class="container">
+
+  <header>
+    <div class="blog-title">between the lines</div>
+    <div class="blog-subtitle">a public private mind</div>
+    <nav>
+      <a class="active" id="navPosts" onclick="showPosts()">writing</a>
+      <a id="navAbout" onclick="showAbout()">about</a>
+    </nav>
+  </header>
+
+  <!-- POST LISTINGS -->
+  <div class="post-listing" id="postListing">
+
+    <div class="posts">
+
+      <div class="post" data-id="1">
+        <div class="post-date">december 14, 2024</div>
+        <div class="post-title">the silence after you said too <span class="accent-wine">much</span></div>
+        <div class="post-body">
+          <p>there's a specific kind of silence that follows an argument where you actually said what you meant. not the performative kind. the raw kind. the kind where you watched yourself become someone you didn't recognize for about forty-five seconds.</p>
+          <p>and then it goes quiet. and the quiet isn't peace. it's the other person deciding whether to forgive you for being honest.</p>
+          <span class="read-more" onclick="openPost(1)">continue reading →</span>
+        </div>
+      </div>
+
+      <div class="post" data-id="2">
+        <div class="post-date">november 29, 2024</div>
+        <div class="post-title">ego doesn't announce <span class="accent-blue">itself</span></div>
+        <div class="post-body">
+          <p>the people with the biggest egos are never the loud ones. they're the ones who quietly restructure every conversation so they never have to be wrong. they don't defend themselves — they just reframe.</p>
+          <p>and you leave the room feeling like you overreacted. like you're the problem. that's not accident. that's architecture.</p>
+          <span class="read-more" onclick="openPost(2)">continue reading →</span>
+        </div>
+      </div>
+
+      <div class="post" data-id="3">
+        <div class="post-date">november 11, 2024</div>
+        <div class="post-title">you're not misunderstood. you're <span class="accent-wine">unclear</span>.</div>
+        <div class="post-body">
+          <p>we protect ourselves with vagueness and then call the resulting confusion miscommunication. but miscommunication implies two people trying and failing. most of the time, one person is trying and the other is protecting.</p>
+          <span class="read-more" onclick="openPost(3)">continue reading →</span>
+        </div>
+      </div>
+
+      <div class="post" data-id="4">
+        <div class="post-date">october 23, 2024</div>
+        <div class="post-title">what it actually means to feel mentally <span class="accent-blue">unsafe</span></div>
+        <div class="post-body">
+          <p>it doesn't look like fear. it looks like walking on a floor that might give way. you don't run. you just stop moving naturally. you start calculating every step, every word, every facial expression.</p>
+          <span class="read-more" onclick="openPost(4)">continue reading →</span>
+        </div>
+      </div>
+
+      <div class="post" data-id="5">
+        <div class="post-date">october 5, 2024</div>
+        <div class="post-title">the weight nobody asks <span class="accent-wine">about</span></div>
+        <div class="post-body">
+          <p>people don't hide their struggles because they're ashamed. they hide them because no one has ever proven they can hold the weight without making it about themselves.</p>
+          <span class="read-more" onclick="openPost(5)">continue reading →</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- FULL POST VIEWS -->
+
+  <div class="post-full" id="post-1">
+    <span class="back-link" onclick="closePost()">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      back
+    </span>
+    <div class="post-date">december 14, 2024</div>
+    <div class="post-title" style="font-size:1.75rem; margin-bottom:32px;">the silence after you said too <span class="accent-wine">much</span></div>
+    <div class="post-body">
+      <p>there's a specific kind of silence that follows an argument where you actually said what you meant. not the performative kind. the raw kind. the kind where you watched yourself become someone you didn't recognize for about forty-five seconds.</p>
+      <p>and then it goes quiet. and the quiet isn't peace. it's the other person deciding whether to forgive you for being honest.</p>
+      <p class="emphasis">we don't punish people for lying. we punish them for stopping.</p>
+      <p>think about that. the lying was fine. the silence after the truth is what breaks things. because the lie kept the structure intact. the truth removes a load-bearing wall and suddenly the whole room is exposed.</p>
+      <p>you didn't say too much. you said the thing that was supposed to stay buried. and now you're sitting in the aftermath, wondering if you should apologize for being accurate.</p>
+      <p>you shouldn't.</p>
+      <p>but you will. because that's what people do when they realize honesty doesn't come with a guarantee that anyone will thank you for it. you'll smooth it over. you'll say "i didn't mean it like that." you'll add softness to something that was supposed to be sharp on purpose.</p>
+      <p class="muted">and the silence will teach you, again, that being understood is less important than being tolerable.</p>
+      <div class="thin-divider"></div>
+      <span class="post-tag wine">ego · honesty · silence</span>
+    </div>
+  </div>
+
+  <div class="post-full" id="post-2">
+    <span class="back-link" onclick="closePost()">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      back
+    </span>
+    <div class="post-date">november 29, 2024</div>
+    <div class="post-title" style="font-size:1.75rem; margin-bottom:32px;">ego doesn't announce <span class="accent-blue">itself</span></div>
+    <div class="post-body">
+      <p>the people with the biggest egos are never the loud ones. they're the ones who quietly restructure every conversation so they never have to be wrong. they don't defend themselves — they just reframe.</p>
+      <p>"i hear what you're saying, but…" and then they pivot. smoothly. so smoothly you don't even notice the conversation was just hijacked.</p>
+      <p class="emphasis-blue">you leave the room feeling like you overreacted. like you're the problem. that's not accident. that's architecture.</p>
+      <p>ego at this level isn't arrogance. it's invisibility. it's the ability to make you doubt your own perception without ever raising their voice. they don't say "you're wrong." they say "i think you might be remembering that differently." same result. cleaner exit.</p>
+      <p>and the worst part? they believe their own version. that's what makes it so effective. it's not manipulation if they're genuinely convinced. it's just two people living in different realities, and one of them is better at making theirs sound reasonable.</p>
+      <p>you can't argue with someone who has rewritten the past in real time. not because they're lying. but because they've already convinced themselves, and conviction always sounds more credible than confusion.</p>
+      <p class="muted">the question isn't whether they're self-aware. the question is whether their lack of self-awareness is serving them too well to ever question it.</p>
+      <div class="thin-divider"></div>
+      <span class="post-tag blue">self-awareness · ego · perception</span>
+    </div>
+  </div>
+
+  <div class="post-full" id="post-3">
+    <span class="back-link" onclick="closePost()">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      back
+    </span>
+    <div class="post-date">november 11, 2024</div>
+    <div class="post-title" style="font-size:1.75rem; margin-bottom:32px;">you're not misunderstood. you're <span class="accent-wine">unclear</span>.</div>
+    <div class="post-body">
+      <p>we protect ourselves with vagueness and then call the resulting confusion miscommunication. but miscommunication implies two people trying and failing. most of the time, one person is trying and the other is protecting.</p>
+      <p>you said "i'm fine" when you weren't. you said "it doesn't matter" when it did. you said "whatever you want" when you had a specific preference that you were too afraid to name. and then — and this is the part that costs you — you got angry when they took you at your word.</p>
+      <p class="emphasis">that's not them failing to understand you. that's you failing to be understood on purpose and then blaming them for the result.</p>
+      <p>here's the uncomfortable truth: clarity is vulnerability. when you say exactly what you mean, you hand someone the power to reject it. vagueness keeps that power with you. you can always retreat. "i didn't mean it like that." "you're reading too much into it."</p>
+      <p>but clarity also creates the only conditions under which real connection is possible. you can't be known if you don't let yourself be read.</p>
+      <p>the people who complain most about being misunderstood are often the ones who've made an art form of being unreadable. and they'll keep being misunderstood until they decide that being known is worth the risk of being rejected.</p>
+      <p class="muted">miscommunication is a convenient word. it spreads the blame evenly. but sometimes it's not a shared failure. sometimes it's a choice you keep making and a word you keep using to avoid admitting it.</p>
+      <div class="thin-divider"></div>
+      <span class="post-tag wine">miscommunication · vulnerability · clarity</span>
+    </div>
+  </div>
+
+  <div class="post-full" id="post-4">
+    <span class="back-link" onclick="closePost()">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      back
+    </span>
+    <div class="post-date">october 23, 2024</div>
+    <div class="post-title" style="font-size:1.75rem; margin-bottom:32px;">what it actually means to feel mentally <span class="accent-blue">unsafe</span></div>
+    <div class="post-body">
+      <p>it doesn't look like fear. it looks like walking on a floor that might give way. you don't run. you just stop moving naturally. you start calculating every step, every word, every facial expression.</p>
+      <p>mentally unsafe doesn't mean someone is threatening you. it means you've learned that being yourself in this specific environment, with this specific person, leads to consequences you can't predict. so you adapt. you compress. you become a smaller version of yourself and you convince yourself it's flexibility.</p>
+      <p class="emphasis-blue">it's not flexibility. it's self-erasure under a different name.</p>
+      <p>the signs are quiet: you rehearse conversations before they happen. you delete texts and rewrite them three times. you laugh at things that aren't funny. you agree with opinions you disagree with. you monitor your own tone so carefully that you lose track of what you actually sound like.</p>
+      <p>and the deepest cut? you start to believe the version of you that survives in that space is the real one. that you're just "like that." quiet. accommodating. low-maintenance. you forget that you weren't always this cautious. that you used to speak without editing. that you used to exist without apologizing for taking up space.</p>
+      <p>mental safety isn't comfort. it's the absence of calculation. it's the freedom to be inconsistent, wrong, loud, needy, or silent — without strategizing first.</p>
+      <p class="muted">if you have to think before you exist, you're not in a safe place. you're in a survivable one. and people confuse those two things for years.</p>
+      <div class="thin-divider"></div>
+      <span class="post-tag blue">safety · emotional pressure · identity</span>
+    </div>
+  </div>
+
+  <div class="post-full" id="post-5">
+    <span class="back-link" onclick="closePost()">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      back
+    </span>
+    <div class="post-date">october 5, 2024</div>
+    <div class="post-title" style="font-size:1.75rem; margin-bottom:32px;">the weight nobody asks <span class="accent-wine">about</span></div>
+    <div class="post-body">
+      <p>people don't hide their struggles because they're ashamed. they hide them because no one has ever proven they can hold the weight without making it about themselves.</p>
+      <p>you tell someone you're not okay and they say "me too" before you've finished your sentence. or they offer solutions you didn't ask for, because sitting with your pain is too uncomfortable for them. or they go quiet in a way that tells you this is now awkward and you should wrap it up.</p>
+      <p class="emphasis">so you learn. not that people don't care, but that caring has a bandwidth, and your pain usually exceeds it.</p>
+      <p>the invisible struggles aren't the dramatic ones. they're the slow ones. the ones that don't look like anything from the outside. waking up and the first thought is heavy. going through a day where nothing is wrong but nothing is right either. sitting next to someone and feeling entirely alone — not because they're distant, but because the gap between what you're experiencing and what you're able to express is too wide to cross.</p>
+      <p>the cruelest part is that the weight doesn't diminish when you don't share it. it just becomes private. and private pain has a way of feeling permanent, because there's no external mirror to reflect it back at a manageable size. it just sits there, growing in the dark, convincing you that it's normal. that this is just what being alive feels like.</p>
+      <p>it isn't.</p>
+      <p class="muted">but you'll need someone who can sit in the dark with you without trying to turn on a light. those people exist. they're just rare enough that most people stop looking.</p>
+      <div class="thin-divider"></div>
+      <span class="post-tag wine">invisible struggle · isolation · weight</span>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div class="about-section" id="aboutSection">
+    <div class="about-heading">about this space</div>
+    <p class="about-text">this isn't a blog. it's a consequence of thinking too much and not having anywhere to put it.</p>
+    <p class="about-text">i write about the things people feel but don't say. not because they're profound, but because they're uncomfortable. ego. miscommunication. the specific loneliness of being in a room full of people who don't see you clearly.</p>
+    <p class="about-text">there's no fake positivity here. no "you got this" energy. just observations that might make you sit with something you've been avoiding. that's the point. not to attack. to reflect.</p>
+    <p class="about-text">if something here lands in a way that bothers you, good. that usually means it's true. the question is what you do with it after.</p>
+    <div class="thin-divider"></div>
+    <p class="about-text" style="color:#9B9590; font-size:0.85rem; font-style:italic;">no comments. no likes. no analytics. just words that either mean something to you or they don't.</p>
+  </div>
+
+  <footer>
+    <p>© 2024 — written in the quiet</p>
+  </footer>
+
+</div>
+
+<script>
+  // scroll progress
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = (scrollTop / docHeight) * 100;
+    document.getElementById('scrollProgress').style.width = progress + '%';
+  });
+
+  // post open/close
+  function openPost(id) {
+    document.getElementById('postListing').classList.add('hidden');
+    document.getElementById('aboutSection').classList.remove('active');
+    document.querySelectorAll('.post-full').forEach(p => p.classList.remove('active'));
+    document.getElementById('post-' + id).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function closePost() {
+    document.querySelectorAll('.post-full').forEach(p => p.classList.remove('active'));
+    document.getElementById('postListing').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // nav
+  function showPosts() {
+    document.getElementById('postListing').classList.remove('hidden');
+    document.getElementById('aboutSection').classList.remove('active');
+    document.querySelectorAll('.post-full').forEach(p => p.classList.remove('active'));
+    document.getElementById('navPosts').classList.add('active');
+    document.getElementById('navAbout').classList.remove('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showAbout() {
+    document.getElementById('postListing').classList.add('hidden');
+    document.querySelectorAll('.post-full').forEach(p => p.classList.remove('active'));
+    document.getElementById('aboutSection').classList.add('active');
+    document.getElementById('navAbout').classList.add('active');
+    document.getElementById('navPosts').classList.remove('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // toast for copy/share (unused but available)
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+</script>
+
+</body>
+</html>
